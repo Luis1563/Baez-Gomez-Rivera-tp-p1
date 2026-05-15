@@ -34,11 +34,9 @@ public class Juego extends InterfaceJuego
 	private Isla[] inicializarIslas() {
 		Isla[] misIslas = new Isla[20]; // Ejemplo con 10 islas
         
-        // 1. Islas de piso (fijas)
+        // 1. Islas de piso (fijas) (Para que el jugador no caiga al inicio)
 		Isla[] misIslas1 = new Isla[20]; // Aumentamos el tamaño para tener más plataformas
 	    int indice = 0;
-
-	    // 1. ISLAS DE PISO (Para que el jugador no caiga al inicio)
 	    for (int i = 0; i < 5; i++) {
 	        misIslas1[indice] = new Isla(i * 250, 580, 200, i);
 	        indice++;

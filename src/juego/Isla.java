@@ -20,9 +20,52 @@ public class Isla {
         e.dibujarRectangulo(x, y, ancho, alto, 0, Color.GREEN);
         
     }
-    public double getX() { return x; }
-    public double getY() { return y; }
-    public double getAncho() { return ancho; }
-    public double getAlto() { return alto; }
-    
+	public double bordeDerecho() {
+		return this.x+this.ancho/2;
+	}
+	public double bordeIzquierdo() {
+		return this.x-this.ancho/2;
+	}
+	public double bordeInferior() {
+		return this.y+this.alto/2;
+	}
+	public double bordeSuperior() {
+		return this.y-this.alto/2;
+	}
+	
+	
+
+	public double getX() {
+		return x;
+	}
+
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public double getY() {
+		return y;
+	}
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
+	public double getAncho() {
+		return ancho;
+	}
+
+	public void setAncho(double ancho) {
+		this.ancho = ancho;
+	}
+
+	public double getAlto() {
+		return alto;
+	}
+
+	public void setAlto(double alto) {
+		this.alto = alto;
+	}
+
 }
+
