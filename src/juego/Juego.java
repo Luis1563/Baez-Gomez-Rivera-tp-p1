@@ -84,6 +84,23 @@ public class Juego extends InterfaceJuego
 		elizabeth.dibujar(entorno);
 		 this.entorno.colorFondo(new Color(128, 0, 128));
 		
+
+		if(elizabeth != null) {
+			elizabeth.dibujar(entorno);
+			//elizabeth.actualizarFisica(islas, entorno.alto());
+		}
+		// física (gravedad y caída) con límite inferior de pantalla
+		if (elizabeth != null) {
+			if (elizabeth.bordeSuperior() > entorno.alto()) {
+				//la princesa cayó al vacío, la reiniciamos al medio
+				elizabeth = null;
+			}
+		}
+		if(elizabeth==null) {
+			elizabeth = new Princesa(entorno.ancho() / 2, entorno.alto() / 2, 30, 50);
+			elizabeth.dibujar(entorno);
+		}
+
 	
 		for (Isla isla : islas) {
 	        if (isla != null) { 
