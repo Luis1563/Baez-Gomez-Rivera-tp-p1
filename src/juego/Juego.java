@@ -12,7 +12,7 @@ public class Juego extends InterfaceJuego
 	// El objeto Entorno que controla el tiempo y otros
 	private Entorno entorno;
 	private Princesa elizabeth;
-
+	private Proyectil proyectil;
     private Isla[] islas;
 	
 	// Variables y métodos propios de cada grupo
@@ -25,7 +25,7 @@ public class Juego extends InterfaceJuego
 		this.entorno = new Entorno(this, "Proyecto para TP", 1280, 720);
         this.islas = inicializarIslas();
         
-		
+		proyectil = null; // no hay proyectil activo al inicio
 		// Inicializar lo que haga falta para el juego
 		// ...
 
@@ -84,8 +84,25 @@ public class Juego extends InterfaceJuego
 	public void tick()
 	{
 		elizabeth.dibujar(entorno);
-		 this.entorno.colorFondo(new Color(128, 0, 128));
+		this.entorno.colorFondo(new Color(128, 0, 128));
 		
+
+		if(elizabeth != null) {
+			elizabeth.dibujar(entorno);
+			//elizabeth.actualizarFisica(islas, entorno.alto());
+		}
+		// física (gravedad y caída) con límite inferior de pantalla
+		if (elizabeth != null) {
+			if (elizabeth.bordeSuperior() > entorno.alto()) {
+				//la princesa cayó al vacío, la reiniciamos al medio
+				elizabeth = null;
+			}
+		}
+		if(elizabeth==null) {
+			elizabeth = new Princesa(entorno.ancho() / 2, entorno.alto() / 2, 20, 50);
+			elizabeth.dibujar(entorno);
+		}
+
 	
 		for (Isla isla : islas) {
 	        if (isla != null) { 
@@ -143,6 +160,7 @@ public class Juego extends InterfaceJuego
 	    }
 
 
+
 	    double velocidad = 3;
 
 	    // AVANZAR HACIA LA DERECHA
@@ -175,6 +193,24 @@ public class Juego extends InterfaceJuego
 	        //}
 	    //}
 	    
+	    
+	    		// disparo con botón izquierdo solo si no hay proyectil activo
+		if (entorno.mousePresente() && entorno.sePresionoBoton(entorno.BOTON_IZQUIERDO) && proyectil == null) {
+			double mouseX = entorno.mouseX();
+			double mouseY = entorno.mouseY();
+			proyectil = new Proyectil(elizabeth.getX(), elizabeth.getY(), 10, 10); //empieza en la misma x e y que la princesa
+			proyectil.dispararHacia(mouseX, mouseY); //dispara hacia la dirección del mouse
+		}
+
+		if (proyectil != null) { //si no es null (está activo), lo movemos y dibujamos
+			proyectil.mover();
+			proyectil.dibujar(entorno);
+			if (proyectil.estaFuera(entorno.ancho(), entorno.alto())) { // si sale de la pantalla, lo eliminamos y se vuelve null
+				proyectil = null;
+			}
+		}
+
+
 	    }
 	
 		
