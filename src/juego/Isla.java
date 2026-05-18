@@ -27,7 +27,7 @@ public class Isla {
 		return this.x-this.ancho/2;
 	}
 	public double bordeInferior() {
-		return this.y+this.alto/2;
+		return this.y+this.alto/2; 
 	}
 	public double bordeSuperior() {
 		return this.y-this.alto/2;
@@ -66,6 +66,11 @@ public class Isla {
 	public void setAlto(double alto) {
 		this.alto = alto;
 	}
+
+	public void mover(double desplazamiento) {
+        // Modifica la coordenada x sumando o restando el valor recibido
+        this.x += desplazamiento; 
+    }
 
 }
 

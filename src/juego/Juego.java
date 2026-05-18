@@ -34,18 +34,18 @@ public class Juego extends InterfaceJuego
 	}
 
 	private Isla[] inicializarIslas() {
-		Isla[] misIslas = new Isla[30]; // Ejemplo con 10 islas
+		Isla[] misIslas = new Isla[10]; //10 islas
         
         // 1. Islas de piso (fijas) (Para que el jugador no caiga al inicio)
-		Isla[] misIslas1 = new Isla[30]; // Aumentamos el tamaño para tener más plataformas
+		Isla[] misIslas1 = new Isla[50]; // Aumentamos el tamaño para tener más plataformas
 	    int indice = 0;
-	    for (int i = 0; i < 5; i++) {
+	    for (int i = 0; i < 15; i++) {
 	        misIslas1[indice] = new Isla(i * 250, 580, 200, i);
 	        indice++;
 	    }
 
 	    // 2. GENERACIÓN POR "COLUMNAS" (Evita superposición)
-	    double avanceX = 250; // Empezamos después del piso inicial
+	    double avanceX = 25; // Empezamos después del piso inicial
 	    double distanciaEntreColumnas = 250; 
 	    
 	    while (indice < misIslas1.length) {
@@ -59,7 +59,7 @@ public class Juego extends InterfaceJuego
 	                double alturaFija = 450 - (i * 150); 
 	                
 	                // Agregamos una pequeña variación en X para que no sea una línea perfecta
-	                double variacionX = (Math.random() * 50) - 25; 
+	                double variacionX = (Math.random() * 50) - 10; 
 	                
 	                misIslas1[indice] = new Isla(avanceX + variacionX, alturaFija, 120, variacionX);
 	                indice++;
@@ -79,6 +79,8 @@ public class Juego extends InterfaceJuego
 	 * actualizar el estado interno del juego para simular el paso del tiempo 
 	 * (ver el enunciado del TP para mayor detalle).
 	 */
+	
+	
 	public void tick()
 	{
 		elizabeth.dibujar(entorno);
@@ -139,7 +141,39 @@ public class Juego extends InterfaceJuego
 	    if (!elizabeth.colisionaPorAbajo(islas)) {
 	        elizabeth.moverAbajo();
 	    }
-	    
+
+
+	    double velocidad = 3;
+
+	    // AVANZAR HACIA LA DERECHA
+	    if (entorno.estaPresionada(entorno.TECLA_DERECHA)) {
+	        // La princesa se mantiene en el centro, el mapa se desplaza a la izquierda
+	        for (Isla isla : islas) {
+	            if (isla != null) isla.mover(-velocidad);
+	        }
+	       // if (castillo != null) castillo.moverse(velocidad); // El castillo se acerca
+	      //  mapaDesplazamiento += velocidad; 
+	   // }
+
+	    // RETROCEDER (solo hasta el inicio)
+	    if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {
+	        int mapaDesplazamiento= 0;
+			if (mapaDesplazamiento > 0) {
+	            // El mapa vuelve a la derecha porque aún no estamos en el inicio
+	            for (Isla isla : islas) {
+	                if (isla != null) isla.mover(velocidad);
+	            }
+			}
+	    }
+	    }
+	            //if (castillo != null) castillo.moverse(-velocidad);
+	           // mapaDesplazamiento -= velocidad;
+	       // } else {
+	            // Si ya estamos en el inicio (mapaDesplazamiento == 0), 
+	            // la princesa se mueve físicamente a la izquierda de la pantalla
+	            //elizabeth.moverIzquierda(velocidad);
+	        //}
+	    //}
 	    
 	    }
 	
