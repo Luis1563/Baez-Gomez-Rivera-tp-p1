@@ -14,6 +14,7 @@ public class Juego extends InterfaceJuego
 	private Princesa elizabeth;
 	private Proyectil proyectil;
     private Isla[] islas;
+	private Enemigo[] enemigos;
 	
 	// Variables y métodos propios de cada grupo
 	// ...
@@ -24,7 +25,31 @@ public class Juego extends InterfaceJuego
 		// Inicializa el objeto entorno
 		this.entorno = new Entorno(this, "Proyecto para TP", 1280, 720);
         this.islas = inicializarIslas();
-        
+
+		this.enemigos = new Enemigo[10]; 
+    	this.enemigos = new Enemigo[6]; 
+		for (int i = 0; i < this.enemigos.length; i++) {
+			double xInicial;
+			int direccionBicho; // Tipo int, igual que en tu constructor
+			
+			// Altura al azar en el cielo
+			double yInicial = 80 + (Math.random() * 400); 
+			
+			if (i % 2 == 0) {
+				// Los pares nacen en la IZQUIERDA y van a la DERECHA
+				xInicial = -100 - (i * 200); 
+				direccionBicho = 1; 
+			} else {
+				// Los impares nacen en la DERECHA y van a la IZQUIERDA
+				xInicial = 1380 + (i * 200); 
+				direccionBicho = -1; 
+			}
+			
+			// Pasamos los 6 parámetros EXACTOS que te pide tu clase Enemigo:
+			// x, y, ancho, alto, velocidad, direccion
+			this.enemigos[i] = new Enemigo(xInicial, yInicial, 35, 35, 2.0, direccionBicho);
+		}
+		     
 		proyectil = null; // no hay proyectil activo al inicio
 		// Inicializar lo que haga falta para el juego
 		// ...
@@ -117,6 +142,31 @@ public class Juego extends InterfaceJuego
 		for (Isla Isla : islas) {
 	        if (Isla != null) Isla.dibujar(entorno);
 	    }
+		
+		for (int i = 0; i < this.enemigos.length; i++) {
+			if (this.enemigos[i] != null) {
+				
+				// 1. Avanzan según su propia dirección (si es 1 suma X, si es -1 resta X)
+				double nuevaX = this.enemigos[i].getX() + (2.0 * this.enemigos[i].getDireccion());
+				
+				// 2. EFECTO SCROLL (Se arrastran con las teclas de tus compañeros)
+				if (entorno.estaPresionada(entorno.TECLA_DERECHA)) {
+					nuevaX -= 2; 
+				}
+				if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {
+					nuevaX += 2; 
+				}
+				
+				// Guardamos la posición en el objeto
+				this.enemigos[i].setX(nuevaX);
+				
+				// 3. Lo dibujamos
+				this.enemigos[i].dibujar(this.entorno);
+			}
+		}
+
+		
+				
 
 	    // Movimiento IZQUIERDA
 	    if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA) 
@@ -231,4 +281,6 @@ public class Juego extends InterfaceJuego
 	{
 		Juego juego = new Juego();
 	}
+
 }
+
