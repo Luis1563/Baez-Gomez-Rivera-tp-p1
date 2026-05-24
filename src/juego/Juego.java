@@ -126,13 +126,21 @@ public class Juego extends InterfaceJuego
 	            elizabeth.moverIzquierda();
 	        }
 	    }
-
+		
+		double velocidad = 3;
 	    // Movimiento DERECHA
 	    if (entorno.estaPresionada(entorno.TECLA_DERECHA) 
 	        && elizabeth.getX() + elizabeth.getAncho()/2 < entorno.ancho()) {
 
 	        if (!elizabeth.colisionaPorDerecha(islas)) {
 	            elizabeth.moverDerecha();
+				if(elizabeth.getX() > entorno.ancho() / 2) { // Solo mueve las islas si la princesa está más allá del centro de la pantalla
+					for (int i = 0; i < islas.length; i++) {
+						if (islas[i] != null && elizabeth.getX() > entorno.ancho() / 2) { // Solo mueve las islas si la princesa está más allá del centro de la pantalla
+						islas[i].mover(-velocidad); //mueve cada isla en la dirección opuesta al movimiento de la princesa para simular desplazamiento del mapa
+						}
+					}
+				}
 	        }
 	    }
 
@@ -161,20 +169,20 @@ public class Juego extends InterfaceJuego
 
 
 
-	    double velocidad = 3;
+	    //double velocidad = 3;
 
 	    // AVANZAR HACIA LA DERECHA
-	    if (entorno.estaPresionada(entorno.TECLA_DERECHA)) {
+	    //if (entorno.estaPresionada(entorno.TECLA_DERECHA)) {
 	        // La princesa se mantiene en el centro, el mapa se desplaza a la izquierda
-	        for (Isla isla : islas) {
-	            if (isla != null) isla.mover(-velocidad);
-	        }
+	        //for (Isla isla : islas) {
+	            //if (isla != null) isla.mover(-velocidad);
+	        //}
 	       // if (castillo != null) castillo.moverse(velocidad); // El castillo se acerca
 	      //  mapaDesplazamiento += velocidad; 
 	   // }
 
 	    // RETROCEDER (solo hasta el inicio)
-	    if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {
+	    /*if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {
 	        int mapaDesplazamiento= 0;
 			if (mapaDesplazamiento > 0) {
 	            // El mapa vuelve a la derecha porque aún no estamos en el inicio
@@ -182,8 +190,8 @@ public class Juego extends InterfaceJuego
 	                if (isla != null) isla.mover(velocidad);
 	            }
 			}
-	    }
-	    }
+	    }*/
+	    //}
 	            //if (castillo != null) castillo.moverse(-velocidad);
 	           // mapaDesplazamiento -= velocidad;
 	       // } else {

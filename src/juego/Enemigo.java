@@ -30,7 +30,7 @@ public class Enemigo {
     public void mover() {
         this.x = this.x + (this.velocidad * this.direccion);
     }
-       
+
     public double getX() { return x; }
     public void setX(double x) { this.x = x; }
     public double getY() { return y; }
