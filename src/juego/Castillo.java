@@ -21,15 +21,18 @@ public class Castillo {
     public void dibujar(Entorno e) {
         e.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, 0, Color.GRAY);
     }
-
     
-   
-public boolean princesaWin(Princesa p) {
-    return p.bordeDerecho() >= this.bordeIzquierdo() && 
-           p.bordeIzquierdo() <= this.bordeDerecho() && 
-           p.bordeInferior() >= this.bordeSuperior() && 
-           p.bordeSuperior() <= this.bordeInferior();
-}
+    public void moverse(double desplazamiento) {
+    this.x += desplazamiento;
+    }
+
+       
+    public boolean princesaWin(Princesa p) {
+        return p.bordeDerecho() >= this.bordeIzquierdo() && 
+            p.bordeIzquierdo() <= this.bordeDerecho() && 
+            p.bordeInferior() >= this.bordeSuperior() && 
+            p.bordeSuperior() <= this.bordeInferior();
+    }
 
 
     // Métodos de los bordes (Sensores de colisión)

@@ -10,6 +10,7 @@ import entorno.Herramientas;
 public class Juego extends InterfaceJuego
 {
 	// El objeto Entorno que controla el tiempo y otros
+	private Castillo castillo;
 	private Entorno entorno;
 	private Princesa elizabeth;
 	private Proyectil proyectil;
@@ -25,30 +26,8 @@ public class Juego extends InterfaceJuego
 		// Inicializa el objeto entorno
 		this.entorno = new Entorno(this, "Proyecto para TP", 1280, 720);
         this.islas = inicializarIslas();
-
-		this.enemigos = new Enemigo[10]; 
-    	this.enemigos = new Enemigo[6]; 
-		for (int i = 0; i < this.enemigos.length; i++) {
-			double xInicial;
-			int direccionBicho; // Tipo int, igual que en tu constructor
-			
-			// Altura al azar en el cielo
-			double yInicial = 80 + (Math.random() * 400); 
-			
-			if (i % 2 == 0) {
-				// Los pares nacen en la IZQUIERDA y van a la DERECHA
-				xInicial = -100 - (i * 200); 
-				direccionBicho = 1; 
-			} else {
-				// Los impares nacen en la DERECHA y van a la IZQUIERDA
-				xInicial = 1380 + (i * 200); 
-				direccionBicho = -1; 
-			}
-			
-			// Pasamos los 6 parámetros EXACTOS que te pide tu clase Enemigo:
-			// x, y, ancho, alto, velocidad, direccion
-			this.enemigos[i] = new Enemigo(xInicial, yInicial, 35, 35, 2.0, direccionBicho);
-		}
+		this.enemigos = new Enemigo[20];
+		//this.castillo = new Castillo(300, 540, 150, 200);
 		     
 		proyectil = null; // no hay proyectil activo al inicio
 		// Inicializar lo que haga falta para el juego
@@ -108,6 +87,7 @@ public class Juego extends InterfaceJuego
 	
 	public void tick()
 	{
+		//castillo.dibujar(entorno);
 		elizabeth.dibujar(entorno);
 		this.entorno.colorFondo(new Color(128, 0, 128));
 		
@@ -141,32 +121,7 @@ public class Juego extends InterfaceJuego
 	        }
 		for (Isla Isla : islas) {
 	        if (Isla != null) Isla.dibujar(entorno);
-	    }
-		
-		for (int i = 0; i < this.enemigos.length; i++) {
-			if (this.enemigos[i] != null) {
-				
-				// 1. Avanzan según su propia dirección (si es 1 suma X, si es -1 resta X)
-				double nuevaX = this.enemigos[i].getX() + (2.0 * this.enemigos[i].getDireccion());
-				
-				// 2. EFECTO SCROLL (Se arrastran con las teclas de tus compañeros)
-				if (entorno.estaPresionada(entorno.TECLA_DERECHA)) {
-					nuevaX -= 2; 
-				}
-				if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {
-					nuevaX += 2; 
-				}
-				
-				// Guardamos la posición en el objeto
-				this.enemigos[i].setX(nuevaX);
-				
-				// 3. Lo dibujamos
-				this.enemigos[i].dibujar(this.entorno);
-			}
-		}
-
-		
-				
+	    }		
 
 	    // Movimiento IZQUIERDA
 	    if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA) 
@@ -208,6 +163,14 @@ public class Juego extends InterfaceJuego
 	    if (!elizabeth.colisionaPorAbajo(islas)) {
 	        elizabeth.moverAbajo();
 	    }
+		this.renovarEnemigos();
+
+		for (int i = 0; i < this.enemigos.length; i++) {
+			if (this.enemigos[i] != null) {
+				this.enemigos[i].actualizar(0);
+				this.enemigos[i].dibujar(this.entorno);
+			}
+		}
 
 
 
@@ -219,9 +182,10 @@ public class Juego extends InterfaceJuego
 	        for (Isla isla : islas) {
 	            if (isla != null) isla.mover(-velocidad);
 	        }
-	       // if (castillo != null) castillo.moverse(velocidad); // El castillo se acerca
-	      //  mapaDesplazamiento += velocidad; 
-	   // }
+	        //if (castillo != null) { 
+        		//castillo.moverse(-velocidad); // El castillo se acerca solo si EXISTE
+   // }
+    		//mapaDesplazamiento += velocidad;
 
 	    // RETROCEDER (solo hasta el inicio)
 	    if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {
@@ -262,7 +226,50 @@ public class Juego extends InterfaceJuego
 
 
 	    }
-	
+	    private void renovarEnemigos() {
+        for (int i = 0; i < this.enemigos.length; i++) {
+            if (this.enemigos[i] != null) {
+                double ex = this.enemigos[i].getX();
+                if (ex < -100 || ex > entorno.ancho() + 100) {
+                    this.enemigos[i] = null;
+                }
+            }
+            if (this.enemigos[i] == null && entorno.numeroDeTick() % 120 == i*15) {
+                this.enemigos[i] = crearEnemigoNuevo();
+            }
+        }
+    }
+
+    private Enemigo crearEnemigoNuevo() {
+        int direccion;
+        double x;
+        if (Math.random() < 0.5) {
+            direccion = 1;
+            x = -60;
+        } else {
+            direccion = -1;
+            x = entorno.ancho() + 60;
+        }
+        double y = buscarAlturaLibre();
+        return new Enemigo(x, y, 35, 35, 2.0, direccion);
+    }
+
+    private double buscarAlturaLibre() {
+        double y;
+        boolean mismaAltura;
+        do {
+            y = 60 + Math.random() * 400;
+            mismaAltura = false;
+            for (int i = 0; i < islas.length; i++) {
+                if (islas[i] != null) {
+                    if (Math.abs(y - islas[i].getY()) < 50) {
+                        mismaAltura = true;
+                    }
+                }
+            }
+        } while (mismaAltura);
+        return y;
+    }		
 		
 		// Procesamiento de un instante de tiempo
 		// ...
