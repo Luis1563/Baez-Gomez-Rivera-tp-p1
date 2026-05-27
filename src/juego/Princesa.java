@@ -8,6 +8,7 @@ public class Princesa {
     
     private double x, y;
     private double ancho, alto; 
+	private Proyectil proyectil;
     //private Image imagen;
     
     
@@ -16,6 +17,7 @@ public class Princesa {
 		this.y = y;
 		this.ancho = ancho;
 		this.alto = alto;
+		this.proyectil = null; // No hay proyectil activo al inicio
 		//this.imagen = imagen;
 	}
 
@@ -39,6 +41,11 @@ public class Princesa {
 		this.y=this.y+2;
 	}
 
+	public void disparar(int mouseX, int mouseY) {
+		double deltaX = mouseX - this.x;
+		double deltaY = mouseY - this.y;
+		this.proyectil = new Proyectil(this.x, this.y, 10, deltaX, deltaY); // Crea un nuevo proyectil en la posición de la princesa
+	}
 
 	public boolean colisionaPorIzquierda(Isla[] islas) {
 		
@@ -128,5 +135,11 @@ public class Princesa {
 		this.alto = alto;
 	}
 
+	public Proyectil getProyectil() {
+		return proyectil;
+	}
+	public void setProyectil(Proyectil proyectil) {
+		this.proyectil = proyectil;
+	}
 
 }

@@ -91,12 +91,12 @@ public class Juego extends InterfaceJuego
 		elizabeth.dibujar(entorno);
 		this.entorno.colorFondo(new Color(128, 0, 128));
 		
-
-		if(elizabeth != null) {
-			elizabeth.dibujar(entorno);
+		
+		//if(elizabeth != null) {
+			//	elizabeth.dibujar(entorno);
 			//elizabeth.actualizarFisica(islas, entorno.alto());
-		}
-		// física (gravedad y caída) con límite inferior de pantalla
+			//}
+			// física (gravedad y caída) con límite inferior de pantalla
 		if (elizabeth != null) {
 			if (elizabeth.bordeSuperior() > entorno.alto()) {
 				//la princesa cayó al vacío, la reiniciamos al medio
@@ -107,7 +107,10 @@ public class Juego extends InterfaceJuego
 			elizabeth = new Princesa(entorno.ancho() / 2, entorno.alto() / 2, 20, 50);
 			elizabeth.dibujar(entorno);
 		}
-
+		
+		if(elizabeth.getProyectil()!=null) {
+			elizabeth.getProyectil().dibujar(entorno);			
+		}
 	
 		for (Isla isla : islas) {
 	        if (isla != null) { 
@@ -131,13 +134,21 @@ public class Juego extends InterfaceJuego
 	            elizabeth.moverIzquierda();
 	        }
 	    }
-
+		
+		double velocidad = 3;
 	    // Movimiento DERECHA
 	    if (entorno.estaPresionada(entorno.TECLA_DERECHA) 
 	        && elizabeth.getX() + elizabeth.getAncho()/2 < entorno.ancho()) {
 
 	        if (!elizabeth.colisionaPorDerecha(islas)) {
 	            elizabeth.moverDerecha();
+				if(elizabeth.getX() > entorno.ancho() / 2) { // Solo mueve las islas si la princesa está más allá del centro de la pantalla
+					for (int i = 0; i < islas.length; i++) {
+						if (islas[i] != null && elizabeth.getX() > entorno.ancho() / 2) { // Solo mueve las islas si la princesa está más allá del centro de la pantalla
+						islas[i].mover(-velocidad); //mueve cada isla en la dirección opuesta al movimiento de la princesa para simular desplazamiento del mapa
+						}
+					}
+				}
 	        }
 	    }
 
@@ -174,21 +185,23 @@ public class Juego extends InterfaceJuego
 
 
 
-	    double velocidad = 3;
+	    //double velocidad = 3;
 
 	    // AVANZAR HACIA LA DERECHA
 	    if (entorno.estaPresionada(entorno.TECLA_DERECHA)) {
 	        // La princesa se mantiene en el centro, el mapa se desplaza a la izquierda
+
 	        for (Isla isla : islas) {
 	            if (isla != null) isla.mover(-velocidad);
 	        }
 	        //if (castillo != null) { 
         		//castillo.moverse(-velocidad); // El castillo se acerca solo si EXISTE
-   // }
+    }
     		//mapaDesplazamiento += velocidad;
 
+
 	    // RETROCEDER (solo hasta el inicio)
-	    if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {
+	    /*if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {
 	        int mapaDesplazamiento= 0;
 			if (mapaDesplazamiento > 0) {
 	            // El mapa vuelve a la derecha porque aún no estamos en el inicio
@@ -196,8 +209,8 @@ public class Juego extends InterfaceJuego
 	                if (isla != null) isla.mover(velocidad);
 	            }
 			}
-	    }
-	    }
+	    }*/
+	    //}
 	            //if (castillo != null) castillo.moverse(-velocidad);
 	           // mapaDesplazamiento -= velocidad;
 	       // } else {
@@ -208,22 +221,28 @@ public class Juego extends InterfaceJuego
 	    //}
 	    
 	    
-	    		// disparo con botón izquierdo solo si no hay proyectil activo
-		if (entorno.mousePresente() && entorno.sePresionoBoton(entorno.BOTON_IZQUIERDO) && proyectil == null) {
-			double mouseX = entorno.mouseX();
-			double mouseY = entorno.mouseY();
-			proyectil = new Proyectil(elizabeth.getX(), elizabeth.getY(), 10, 10); //empieza en la misma x e y que la princesa
-			proyectil.dispararHacia(mouseX, mouseY); //dispara hacia la dirección del mouse
+	    // disparo con botón izquierdo solo si no hay proyectil activo
+		if (entorno.mousePresente() && entorno.sePresionoBoton(entorno.BOTON_IZQUIERDO) && elizabeth.getProyectil() == null) {
+			elizabeth.disparar(entorno.mouseX(), entorno.mouseY());
+			//double mouseX = entorno.mouseX();
+			//double mouseX = entorno.mouseX();
+			//double mouseY = entorno.mouseY();
+			//proyectil = new Proyectil(elizabeth.getX(), elizabeth.getY(), 10, 10); //empieza en la misma x e y que la princesa
+			//proyectil.dispararHacia(mouseX, mouseY); //dispara hacia la dirección del mouse
 		}
 
-		if (proyectil != null) { //si no es null (está activo), lo movemos y dibujamos
-			proyectil.mover();
-			proyectil.dibujar(entorno);
-			if (proyectil.estaFuera(entorno.ancho(), entorno.alto())) { // si sale de la pantalla, lo eliminamos y se vuelve null
-				proyectil = null;
-			}
+		//movimiento del proyectil si es que hay uno activo
+		if (elizabeth.getProyectil() != null) { //si no es null (está activo), lo movemos y dibujamos
+			elizabeth.getProyectil().mover();
 		}
-
+		
+		//colisiones y límites del proyectil
+		if (elizabeth.getProyectil() != null && elizabeth.getProyectil().estaFueraDePantalla(entorno)) { // si sale de la pantalla, lo eliminamos y se vuelve null
+			elizabeth.setProyectil(null);
+		}
+		//if (elizabeth.getProyectil() != null && elizabeth.getProyectil().colisionaConEnemigo(enemigo)) { // si colisiona con algún enemigo, lo eliminamos y se vuelve null{
+		//	elizabeth.setProyectil(null);
+		//}
 
 	    }
 	    private void renovarEnemigos() {
