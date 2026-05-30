@@ -104,15 +104,15 @@ public class Juego extends InterfaceJuego
 	{
 				// Implementación de pantalla de Inicio
 		    if (mostrandoInicio) {
-		        // Configuramos el estilo del texto [9]
+		        // Configuramos el estilo del texto y el color 
 		        this.entorno.cambiarFont("Arial Black", 60,new Color(0, 150,255)); 
-		        // Escribimos el título en pantalla [6]
+		        // Escribimos el título en pantalla
 		        this.entorno.escribirTexto("Super Elizabeth Sis", 350, 350);
 		        
-		        this.entorno.cambiarFont("Arial", 25, Color.GREEN);
-		        this.entorno.escribirTexto("Presione ENTER para jugar", 550, 400);
+		        this.entorno.cambiarFont("Arial", 30, Color.GREEN);
+		        this.entorno.escribirTexto("Presione ENTER para jugar", 480, 400);
 
-		        // Detectamos si el usuario presiona la tecla ENTER para cambiar el estado [7, 10]
+		        // Detecta si el usuario presiona la tecla ENTER para cambiar el estado
 		        if (this.entorno.estaPresionada(this.entorno.TECLA_ENTER)) {
 		            this.mostrandoInicio = false;
 		        }
@@ -236,8 +236,6 @@ public class Juego extends InterfaceJuego
 				this.enemigos[i].dibujar(this.entorno);
 			}
 		}
-
-
 
 	    //double velocidad = 3;
 
