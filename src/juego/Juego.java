@@ -126,8 +126,6 @@ public class Juego extends InterfaceJuego
 	            // Cada isla sabe cómo dibujarse a sí misma
 	            isla.dibujar(this.entorno); 
 	            
-	             
-	            }
 	        }
 		for (Isla Isla : islas) {
 	        if (Isla != null) Isla.dibujar(entorno);
