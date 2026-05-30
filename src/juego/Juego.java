@@ -10,7 +10,9 @@ import entorno.Herramientas;
 public class Juego extends InterfaceJuego
 {
 	// El objeto Entorno que controla el tiempo y otros
+
 	private boolean mostrandoInicio;
+
 	private Castillo castillo;
 	private Entorno entorno;
 	private Princesa elizabeth;
@@ -23,7 +25,10 @@ public class Juego extends InterfaceJuego
 	
 	Juego()
 	{
+
 		this.mostrandoInicio = true;
+
+
 		elizabeth = new Princesa(640, 360, 20, 50);
 		// Inicializa el objeto entorno
 		this.entorno = new Entorno(this, "Proyecto para TP", 1280, 720);
@@ -59,7 +64,11 @@ public class Juego extends InterfaceJuego
 	        indice++;
 	    }
 
+
 	    // 2. GENERACIÓN POR "COLUMNAS" (Esto Evita la superposición)
+
+	    // 2. GENERACIÓN POR "COLUMNAS" (Evita superposición)
+
 	    double avanceX = 25; // Empezamos después del piso inicial
 	    double distanciaEntreColumnas = 250; 
 	    
@@ -98,6 +107,7 @@ public class Juego extends InterfaceJuego
 	
 	public void tick()
 	{
+
 		    if (mostrandoInicio) {
 		        // Configuramos el estilo del texto [9]
 		        this.entorno.cambiarFont("Arial Black", 60,new Color(0, 150,255)); 
@@ -112,16 +122,25 @@ public class Juego extends InterfaceJuego
 		            this.mostrandoInicio = false;
 		        }
 		    } else {
+
 		this.castillo.dibujar(entorno);
 		elizabeth.dibujar(entorno);
 		this.entorno.colorFondo(new Color(128, 0, 128));
 		
 		
+
 		/*if(elizabeth != null) {
 				elizabeth.dibujar(entorno);
 			elizabeth.actualizarFisica(islas, entorno.alto());
 			}*/
 			 //física (gravedad y caída) con límite inferior de pantalla
+
+		//if(elizabeth != null) {
+			//	elizabeth.dibujar(entorno);
+			//elizabeth.actualizarFisica(islas, entorno.alto());
+			//}
+			// física (gravedad y caída) con límite inferior de pantalla
+
 		if (elizabeth != null) {
 			if (elizabeth.bordeSuperior() > entorno.alto()) {
 				//la princesa cayó al vacío, la reiniciamos al medio
@@ -274,7 +293,9 @@ public class Juego extends InterfaceJuego
 		if (elizabeth.getProyectil() != null && elizabeth.getProyectil().estaFueraDePantalla(entorno)) { // si sale de la pantalla, lo eliminamos y se vuelve null
 			elizabeth.setProyectil(null);
 		}
+
 		}
+
 		//if (elizabeth.getProyectil() != null && elizabeth.getProyectil().colisionaConEnemigo(enemigo)) { // si colisiona con algún enemigo, lo eliminamos y se vuelve null{
 		//	elizabeth.setProyectil(null);
 		//}
