@@ -65,9 +65,7 @@ public class Juego extends InterfaceJuego
 	    }
 
 
-	    // 2. GENERACIÓN POR "COLUMNAS" (Esto Evita la superposición)
-
-	    // 2. GENERACIÓN POR "COLUMNAS" (Evita superposición)
+	    // 2. GENERACIÓN POR "COLUMNAS" (Esto Evita la superposición entre las islas)
 
 	    double avanceX = 25; // Empezamos después del piso inicial
 	    double distanciaEntreColumnas = 250; 
@@ -161,10 +159,6 @@ public class Juego extends InterfaceJuego
 	            // Cada isla sabe cómo dibujarse a sí misma
 	            isla.dibujar(this.entorno); 
 	            
-	             //Aprovechamos el bucle para verificar si Elizabeth está apoyada
-	             	//if (elizabeth.estaApoyadaEn(isla)) {
-	             	//	elizabeth.detenerCaida(isla.getY());
-	            }
 	        }
 		for (Isla Isla : islas) {
 	        if (Isla != null) Isla.dibujar(entorno);
