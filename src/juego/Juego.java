@@ -40,11 +40,20 @@ public class Juego extends InterfaceJuego
 	private Isla[] inicializarIslas() {
 		Isla[] misIslas = new Isla[10]; //10 islas
         
-        // 1. Islas de piso (fijas) (Para que el jugador no caiga al inicio)
 		Isla[] misIslas1 = new Isla[50]; // Aumentamos el tamaño para tener más plataformas
 	    int indice = 0;
+		
+		
+        // 1. Islas de piso (fijas) (Para que el jugador no caiga al inicio)
 	    for (int i = 0; i < 15; i++) {
-	        misIslas1[indice] = new Isla(i * 250, 580, 200, i);
+	        misIslas1[indice] = new Isla(i * 250, entorno.alto() - 10, 200, i);
+				if (i == 9) { // Si es la última isla de piso, colocamos el castillo sobre ella
+				double x = misIslas1[indice].getX();
+				double y = misIslas1[indice].getY() - misIslas1[indice].getAlto()/2; // Colocamos el castillo justo encima de la isla
+				
+				this.castillo = new Castillo(x, y, 160, 200);
+				this.castillo.setY(this.castillo.getY() - this.castillo.getAlto()/2); // Ajustamos la posición del castillo para que esté sobre la isla
+			}
 	        indice++;
 	    }
 
@@ -87,7 +96,7 @@ public class Juego extends InterfaceJuego
 	
 	public void tick()
 	{
-		//castillo.dibujar(entorno);
+		this.castillo.dibujar(entorno);
 		elizabeth.dibujar(entorno);
 		this.entorno.colorFondo(new Color(128, 0, 128));
 		
@@ -136,21 +145,39 @@ public class Juego extends InterfaceJuego
 	    }
 		
 		double velocidad = 3;
-	    // Movimiento DERECHA
-	    if (entorno.estaPresionada(entorno.TECLA_DERECHA) 
-	        && elizabeth.getX() + elizabeth.getAncho()/2 < entorno.ancho()) {
+			
+			
+		// Movimiento DERECHA
+		if (entorno.estaPresionada(entorno.TECLA_DERECHA)){ 
+			double limiteMovimiento = entorno.ancho() * 0.55; // La princesa puede moverse libremente hasta el 55% del ancho de la pantalla
+		// La princesa se mantiene en el centro, el mapa se desplaza a la izquierda
 
-	        if (!elizabeth.colisionaPorDerecha(islas)) {
-	            elizabeth.moverDerecha();
-				if(elizabeth.getX() > entorno.ancho() / 2) { // Solo mueve las islas si la princesa está más allá del centro de la pantalla
+	       	if (elizabeth.getX() < limiteMovimiento && !elizabeth.colisionaPorDerecha(islas)) {
+	           	elizabeth.moverDerecha();
+			}
+				
+			else if(elizabeth.getX() >= limiteMovimiento && !elizabeth.colisionaPorDerecha(islas)) { // Solo mueve las islas si la princesa está más allá del centro de la pantalla
+				if ((castillo.bordeDerecho() <= entorno.ancho())){
+
+					if (elizabeth.bordeDerecho() < entorno.ancho()){
+						elizabeth.moverDerecha();
+					}
+					else {
+						elizabeth.setX(entorno.ancho() - elizabeth.getAncho()/2); // Evita que la princesa se salga por la derecha
+					}
+				}
+				else {
+					this.castillo.mover(-velocidad); // El castillo se acerca solo si EXISTE
 					for (int i = 0; i < islas.length; i++) {
-						if (islas[i] != null && elizabeth.getX() > entorno.ancho() / 2) { // Solo mueve las islas si la princesa está más allá del centro de la pantalla
-						islas[i].mover(-velocidad); //mueve cada isla en la dirección opuesta al movimiento de la princesa para simular desplazamiento del mapa
+						if (islas[i] != null) { // Solo mueve las islas si la princesa está más allá del centro de la pantalla
+							islas[i].mover(-velocidad); //mueve cada isla en la dirección opuesta al movimiento de la princesa para simular desplazamiento del mapa
 						}
 					}
 				}
-	        }
-	    }
+
+			}
+		}
+
 
 	    // Movimiento ABAJO (gravedad o tecla abajo)
 	    if (entorno.estaPresionada(entorno.TECLA_ABAJO) 
@@ -188,15 +215,6 @@ public class Juego extends InterfaceJuego
 	    //double velocidad = 3;
 
 	    // AVANZAR HACIA LA DERECHA
-	    if (entorno.estaPresionada(entorno.TECLA_DERECHA)) {
-	        // La princesa se mantiene en el centro, el mapa se desplaza a la izquierda
-
-	        for (Isla isla : islas) {
-	            if (isla != null) isla.mover(-velocidad);
-	        }
-	        //if (castillo != null) { 
-        		//castillo.moverse(-velocidad); // El castillo se acerca solo si EXISTE
-    }
     		//mapaDesplazamiento += velocidad;
 
 
@@ -246,49 +264,49 @@ public class Juego extends InterfaceJuego
 
 	    }
 	    private void renovarEnemigos() {
-        for (int i = 0; i < this.enemigos.length; i++) {
-            if (this.enemigos[i] != null) {
-                double ex = this.enemigos[i].getX();
-                if (ex < -100 || ex > entorno.ancho() + 100) {
-                    this.enemigos[i] = null;
-                }
-            }
-            if (this.enemigos[i] == null && entorno.numeroDeTick() % 120 == i*15) {
-                this.enemigos[i] = crearEnemigoNuevo();
-            }
-        }
-    }
+        	for (int i = 0; i < this.enemigos.length; i++) {
+            	if (this.enemigos[i] != null) {
+                	double ex = this.enemigos[i].getX();
+                	if (ex < -100 || ex > entorno.ancho() + 100) {
+                    	this.enemigos[i] = null;
+                	}
+            	}
+            	if (this.enemigos[i] == null && entorno.numeroDeTick() % 120 == i*15) {
+                	this.enemigos[i] = crearEnemigoNuevo();
+            	}
+        	}
+    	}
 
-    private Enemigo crearEnemigoNuevo() {
-        int direccion;
-        double x;
-        if (Math.random() < 0.5) {
-            direccion = 1;
-            x = -60;
-        } else {
-            direccion = -1;
-            x = entorno.ancho() + 60;
-        }
-        double y = buscarAlturaLibre();
-        return new Enemigo(x, y, 35, 35, 2.0, direccion);
-    }
+    	private Enemigo crearEnemigoNuevo() {
+        	int direccion;
+        	double x;
+        	if (Math.random() < 0.5) {
+            	direccion = 1;
+            	x = -60;
+        	} else {
+            	direccion = -1;
+            	x = entorno.ancho() + 60;
+        	}
+        	double y = buscarAlturaLibre();
+        	return new Enemigo(x, y, 35, 35, 2.0, direccion);
+    	}
 
-    private double buscarAlturaLibre() {
-        double y;
-        boolean mismaAltura;
-        do {
-            y = 60 + Math.random() * 400;
-            mismaAltura = false;
-            for (int i = 0; i < islas.length; i++) {
-                if (islas[i] != null) {
-                    if (Math.abs(y - islas[i].getY()) < 50) {
-                        mismaAltura = true;
-                    }
-                }
-            }
-        } while (mismaAltura);
-        return y;
-    }		
+    	private double buscarAlturaLibre() {
+        	double y;
+        	boolean mismaAltura;
+        	do {
+            	y = 60 + Math.random() * 400;
+            	mismaAltura = false;
+            	for (int i = 0; i < islas.length; i++) {
+                	if (islas[i] != null) {
+                    	if (Math.abs(y - islas[i].getY()) < 50) {
+                        	mismaAltura = true;
+                    	}
+                	}
+            	}
+        	} while (mismaAltura);
+        		return y;
+    	}		
 		
 		// Procesamiento de un instante de tiempo
 		// ...
