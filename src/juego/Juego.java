@@ -11,8 +11,7 @@ public class Juego extends InterfaceJuego
 {
 	// El objeto Entorno que controla el tiempo y otros
 
-	private boolean mostrandoInicio;
-
+	private boolean mostrandoInicio; // pantalla de inicio atributo
 	private Castillo castillo;
 	private Entorno entorno;
 	private Princesa elizabeth;
@@ -26,9 +25,7 @@ public class Juego extends InterfaceJuego
 	Juego()
 	{
 
-		this.mostrandoInicio = true;
-
-
+		this.mostrandoInicio = true; //Pantalla de inicio
 		elizabeth = new Princesa(640, 360, 20, 50);
 		// Inicializa el objeto entorno
 		this.entorno = new Entorno(this, "Proyecto para TP", 1280, 720);
@@ -105,7 +102,7 @@ public class Juego extends InterfaceJuego
 	
 	public void tick()
 	{
-
+				// Implementación de pantalla de Inicio
 		    if (mostrandoInicio) {
 		        // Configuramos el estilo del texto [9]
 		        this.entorno.cambiarFont("Arial Black", 60,new Color(0, 150,255)); 
@@ -158,7 +155,8 @@ public class Juego extends InterfaceJuego
 	        if (isla != null) { 
 	            // Cada isla sabe cómo dibujarse a sí misma
 	            isla.dibujar(this.entorno); 
-	            
+	           
+	            }
 	        }
 		for (Isla Isla : islas) {
 	        if (Isla != null) Isla.dibujar(entorno);
@@ -246,18 +244,6 @@ public class Juego extends InterfaceJuego
 	    // AVANZAR HACIA LA DERECHA
     		//mapaDesplazamiento += velocidad;
 
-
-	    // RETROCEDER (solo hasta el inicio)
-	    /*if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {
-	        int mapaDesplazamiento= 0;
-			if (mapaDesplazamiento > 0) {
-	            // El mapa vuelve a la derecha porque aún no estamos en el inicio
-	            for (Isla isla : islas) {
-	                if (isla != null) isla.mover(velocidad);
-	            }
-			}
-	    }*/
-	    //}
 	            //if (castillo != null) castillo.moverse(-velocidad);
 	           // mapaDesplazamiento -= velocidad;
 	       // } else {
