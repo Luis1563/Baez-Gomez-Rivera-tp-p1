@@ -10,6 +10,7 @@ import entorno.Herramientas;
 public class Juego extends InterfaceJuego
 {
 	// El objeto Entorno que controla el tiempo y otros
+	private boolean mostrandoInicio;
 	private Castillo castillo;
 	private Entorno entorno;
 	private Princesa elizabeth;
@@ -22,6 +23,7 @@ public class Juego extends InterfaceJuego
 	
 	Juego()
 	{
+		this.mostrandoInicio = true;
 		elizabeth = new Princesa(640, 360, 20, 50);
 		// Inicializa el objeto entorno
 		this.entorno = new Entorno(this, "Proyecto para TP", 1280, 720);
@@ -57,7 +59,7 @@ public class Juego extends InterfaceJuego
 	        indice++;
 	    }
 
-	    // 2. GENERACIÓN POR "COLUMNAS" (Esto Evita la superposición de Islas)
+	    // 2. GENERACIÓN POR "COLUMNAS" (Esto Evita la superposición)
 	    double avanceX = 25; // Empezamos después del piso inicial
 	    double distanciaEntreColumnas = 250; 
 	    
@@ -96,6 +98,20 @@ public class Juego extends InterfaceJuego
 	
 	public void tick()
 	{
+		    if (mostrandoInicio) {
+		        // Configuramos el estilo del texto [9]
+		        this.entorno.cambiarFont("Arial Black", 60,new Color(0, 150,255)); 
+		        // Escribimos el título en pantalla [6]
+		        this.entorno.escribirTexto("Super Elizabeth Sis", 350, 350);
+		        
+		        this.entorno.cambiarFont("Arial", 25, Color.GREEN);
+		        this.entorno.escribirTexto("Presione ENTER para jugar", 550, 400);
+
+		        // Detectamos si el usuario presiona la tecla ENTER para cambiar el estado [7, 10]
+		        if (this.entorno.estaPresionada(this.entorno.TECLA_ENTER)) {
+		            this.mostrandoInicio = false;
+		        }
+		    } else {
 		this.castillo.dibujar(entorno);
 		elizabeth.dibujar(entorno);
 		this.entorno.colorFondo(new Color(128, 0, 128));
@@ -126,6 +142,10 @@ public class Juego extends InterfaceJuego
 	            // Cada isla sabe cómo dibujarse a sí misma
 	            isla.dibujar(this.entorno); 
 	            
+	             //Aprovechamos el bucle para verificar si Elizabeth está apoyada
+	             	//if (elizabeth.estaApoyadaEn(isla)) {
+	             	//	elizabeth.detenerCaida(isla.getY());
+	            }
 	        }
 		for (Isla Isla : islas) {
 	        if (Isla != null) Isla.dibujar(entorno);
@@ -253,6 +273,7 @@ public class Juego extends InterfaceJuego
 		//colisiones y límites del proyectil
 		if (elizabeth.getProyectil() != null && elizabeth.getProyectil().estaFueraDePantalla(entorno)) { // si sale de la pantalla, lo eliminamos y se vuelve null
 			elizabeth.setProyectil(null);
+		}
 		}
 		//if (elizabeth.getProyectil() != null && elizabeth.getProyectil().colisionaConEnemigo(enemigo)) { // si colisiona con algún enemigo, lo eliminamos y se vuelve null{
 		//	elizabeth.setProyectil(null);
