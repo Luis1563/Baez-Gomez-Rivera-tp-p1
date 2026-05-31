@@ -42,16 +42,15 @@ public class Juego extends InterfaceJuego
 	}
 
 	private Isla[] inicializarIslas() {
-		Isla[] misIslas = new Isla[10]; //10 islas
         
-		Isla[] misIslas1 = new Isla[50]; // Aumentamos el tamaño para tener más plataformas
+		Isla[] misIslas1 = new Isla[50]; //Se toman este tamaños para tener más plataformas
 	    int indice = 0;
 		
 		
         // 1. Islas de piso (fijas) (Para que el jugador no caiga al inicio)
-	    for (int i = 0; i < 15; i++) {
+	    for (int i = 0; i < 16; i++) {
 	        misIslas1[indice] = new Isla(i * 250, entorno.alto() - 10, 200, i);
-				if (i == 9) { // Si es la última isla de piso, colocamos el castillo sobre ella
+				if (i == 15) { // Si es la última isla de piso, colocamos el castillo sobre ella
 				double x = misIslas1[indice].getX();
 				double y = misIslas1[indice].getY() - misIslas1[indice].getAlto()/2; // Colocamos el castillo justo encima de la isla
 				
