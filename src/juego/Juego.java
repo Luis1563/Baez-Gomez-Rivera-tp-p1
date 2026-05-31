@@ -47,10 +47,10 @@ public class Juego extends InterfaceJuego
 	    int indice = 0;
 		
 		
-        // 1. Islas de piso (fijas) (Para que el jugador no caiga al inicio)
+        // Islas de piso (fijas) (Para que el jugador no caiga al inicio)
 	    for (int i = 0; i < 16; i++) {
 	        misIslas1[indice] = new Isla(i * 250, entorno.alto() - 10, 200, i);
-				if (i == 15) { // Si es la última isla de piso, colocamos el castillo sobre ella
+				if (i == 15) { //la  número 15 es la última isla de piso, colocamos el castillo sobre ella
 				double x = misIslas1[indice].getX();
 				double y = misIslas1[indice].getY() - misIslas1[indice].getAlto()/2; // Colocamos el castillo justo encima de la isla
 				
@@ -61,7 +61,7 @@ public class Juego extends InterfaceJuego
 	    }
 
 
-	    // 2. GENERACIÓN POR "COLUMNAS" (Esto Evita la superposición entre las islas)
+	    //GENERACIÓN POR "COLUMNAS" (Esto Evita la superposición entre las islas)
 
 	    double avanceX = 25; // Empezamos después del piso inicial
 	    double distanciaEntreColumnas = 250; 
@@ -156,10 +156,7 @@ public class Juego extends InterfaceJuego
 	            isla.dibujar(this.entorno); 
 	           
 	            }
-	        }
-		for (Isla Isla : islas) {
-	        if (Isla != null) Isla.dibujar(entorno);
-	    }		
+	        }	
 
 	    // Movimiento IZQUIERDA
 	    if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA) 
