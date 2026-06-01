@@ -18,6 +18,7 @@ public class Juego extends InterfaceJuego
 	private Proyectil proyectil;
     private Isla[] islas;
 	private Enemigo[] enemigos;
+	private boolean juegoGanado = false; // boolean para pantalla ganadora
 	private boolean juegoTerminado;
 	private double respawnX; // para reiniciar a la princesa
 	private double respawnY;
@@ -123,6 +124,23 @@ public class Juego extends InterfaceJuego
 		    }
 		}
 		else {
+				if (this.juegoGanado) {// con esto creamos la pantalla de victoria
+                this.entorno.colorFondo(Color.BLACK); // Pinta el fondo de negro
+                
+                // Configuramos la letra y el mensaje de victoria
+                this.entorno.cambiarFont("Arial", 45, Color.WHITE);
+                this.entorno.escribirTexto("¡Ganaste mi rey empoderado!", 350, 360);
+                
+                return; // Corta el tick acá para congelar todo el juego al ganar
+            }
+				if (this.castillo != null) {
+					this.castillo.dibujar(entorno);
+					
+					// Si Elizabeth roza el castillo, se activa la victoria
+					if (this.castillo.princesaWin(elizabeth)) {
+						this.juegoGanado = true;
+					}
+            }
 
 			this.entorno.colorFondo(new Color(128, 0, 128));
 			this.castillo.dibujar(entorno);
