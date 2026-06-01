@@ -8,17 +8,26 @@ public class Princesa {
     
     private double x, y;
     private double ancho, alto; 
+	private double velocidadY;
 	private Proyectil proyectil;
+	private boolean[] vidas;
+	private int vidasRestantes;
     //private Image imagen;
     
     
-	public Princesa(double x, double y, double ancho, double alto) {
+	public Princesa(double x, double y, double ancho, double alto, int vidasIniciales) {
 		this.x = x;
 		this.y = y;
 		this.ancho = ancho;
 		this.alto = alto;
 		this.proyectil = null; // No hay proyectil activo al inicio
 		//this.imagen = imagen;
+
+		this.vidas = new boolean[vidasIniciales];
+		for (int i = 0; i < vidasIniciales; i++) {
+			this.vidas[i] = true;
+		}
+		this.vidasRestantes = vidasIniciales;
 	}
 
 	public void dibujar(Entorno e) {
@@ -94,6 +103,53 @@ public class Princesa {
 		return false;
 	}
 	
+	
+	// Métodos para detectar colisiones con enemigos
+	public boolean colisionaPorIzquierda(Enemigo enemigo) {
+		
+		if (enemigo != null && bordeIzquierdo() <= enemigo.bordeDerecho() && bordeDerecho() > enemigo.bordeDerecho()) {
+			if (bordeInferior() > enemigo.bordeSuperior() && bordeSuperior() < enemigo.bordeInferior()) {
+				return true;				
+			}
+		}
+		return false;
+	}
+
+	
+	public boolean colisionaPorDerecha(Enemigo enemigo) {
+		
+		if (enemigo != null && bordeDerecho() >= enemigo.bordeIzquierdo() && bordeIzquierdo() < enemigo.bordeIzquierdo()) {
+			if (bordeInferior() > enemigo.bordeSuperior() && bordeSuperior() < enemigo.bordeInferior()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean colisionaPorAbajo(Enemigo enemigo) {
+		
+		if (enemigo != null && bordeInferior() >= enemigo.bordeSuperior() && bordeInferior() < enemigo.bordeInferior()) {
+			if (bordeDerecho() > enemigo.bordeIzquierdo() && bordeIzquierdo() < enemigo.bordeDerecho()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	public boolean colisionaPorArriba(Enemigo enemigo) {
+		if (enemigo != null && bordeSuperior() <= enemigo.bordeInferior() && bordeSuperior() > enemigo.bordeSuperior()) {
+			if (bordeDerecho() > enemigo.bordeIzquierdo() && bordeIzquierdo() < enemigo.bordeDerecho()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+
+
+
 
 	public double bordeDerecho() {
 		return this.x+this.ancho/2;
@@ -106,6 +162,50 @@ public class Princesa {
 	}
 	public double bordeSuperior() {
 		return this.y-this.alto/2;
+	}
+
+
+
+	public void perderVida() {
+		/* if (vidasRestantes <= 0) {
+			return;
+		}*/
+		int indice = -1; // se usa para señalar el ultimo indice que estaba en true, para cambiarlo a false
+		for (int i = vidas.length - 1; i >= 0; i--) {
+			if (vidas[i] == true && indice == -1) {
+				indice = i; // Guardamos el índice del corazón que se perdió
+			}
+		}
+		if (indice != -1) {
+			vidas[indice] = false; // Cambia el último corazón en true a false
+			vidasRestantes--;
+		}
+	}
+
+	public boolean estaViva() {
+		return vidasRestantes > 0;
+	}
+
+	public void reiniciarPosicion(double x, double y) {
+		this.x = x;
+		this.y = y;
+		this.velocidadY = 0;
+	}
+
+	public void dibujarVidas(Entorno e) {
+		for (int i = 0; i < vidas.length; i++) {
+			Color color;
+			if (vidas[i] == true) {
+				color = Color.RED;
+			}
+			else {
+				color = Color.GRAY;
+			}
+
+			double x = 30 + i * 36; //36 porque el ancho del corazón es 30 y puse un espacio de 6 entre ellos
+			double y = 30;
+			e.dibujarRectangulo(x, y, 30, 30, 0, color);
+		}
 	}
 
 
