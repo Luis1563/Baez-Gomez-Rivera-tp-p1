@@ -137,7 +137,7 @@ public class Juego extends InterfaceJuego
 					this.castillo.dibujar(entorno);
 					
 					// Si Elizabeth roza el castillo, se activa la victoria
-					if (this.castillo.princesaWin(elizabeth)) {
+					if (elizabeth != null && this.castillo.princesaWin(elizabeth)) {
 						this.juegoGanado = true;
 					}
             }
