@@ -22,6 +22,8 @@ public class Juego extends InterfaceJuego
 	private boolean juegoTerminado;
 	private double respawnX; // para reiniciar a la princesa
 	private double respawnY;
+	private int enemigosEliminados;   // contador de enemigos eliminados
+	private int puntuacion;           // sistema de puntos
 	
 	
 	// Variables y métodos propios de cada grupo
@@ -42,7 +44,8 @@ public class Juego extends InterfaceJuego
 
 		this.respawnX = entorno.ancho() / 2;
 		this.respawnY = entorno.alto() / 2;
-		
+		this.enemigosEliminados = 0;
+		this.puntuacion = 0;
 		// Inicia el juego!
 		this.entorno.iniciar();
 	}
@@ -141,6 +144,14 @@ public class Juego extends InterfaceJuego
 						this.juegoGanado = true;
 					}
             }
+
+				entorno.cambiarFont("Arial", 20, Color.GREEN);
+				entorno.escribirTexto("Puntos: " + puntuacion, 400, 30);
+
+				if (enemigosEliminados % 10 == 0 && enemigosEliminados > 0) {
+				    entorno.cambiarFont("Arial", 20, Color.GREEN);
+				    entorno.escribirTexto("¡Vida extra obtenida!", 800, 30);
+				}
 
 			this.entorno.colorFondo(new Color(128, 0, 128));
 			//this.castillo.dibujar(entorno);
@@ -321,34 +332,42 @@ public class Juego extends InterfaceJuego
 				}
 			}
 				if (elizabeth != null){
-					if (elizabeth.getProyectil() != null) { //si no es null (está activo), lo movemos y dibujamos
-						elizabeth.getProyectil().mover();
-						elizabeth.getProyectil().dibujar(entorno);
+					if (elizabeth.getProyectil() != null) {
+					    elizabeth.getProyectil().mover();
+					    elizabeth.getProyectil().dibujar(entorno);
 
-						for (int i = 0; i < enemigos.length; i++) {
-							if (elizabeth.getProyectil() != null) {
-								if (enemigos[i] != null && elizabeth.getProyectil().colisionaConEnemigo(enemigos[i])) {
-								enemigos[i] = null; // El enemigo desaparece al ser impactado
-								//renovarEnemigos(); // Renovamos los enemigos para llenar el espacio del enemigo eliminado
-							
-								elizabeth.setProyectil(null); // El proyectil desaparece al impactar
-								}
-							}
-						}
+					    for (int i = 0; i < enemigos.length; i++) {
+					        if (elizabeth.getProyectil() != null) {
+					            if (enemigos[i] != null && elizabeth.getProyectil().colisionaConEnemigo(enemigos[i])) {
+					                enemigos[i] = null; // El enemigo desaparece al ser impactado
+					                elizabeth.setProyectil(null); // El proyectil desaparece al impactar
 
-						if (elizabeth.getProyectil() != null){ // Primeros chequeamos que no se haya eliminado por colision
-							if (elizabeth.getProyectil().estaFueraDePantalla(entorno)) { // si sale de la pantalla, lo eliminamos y se vuelve null
-								elizabeth.setProyectil(null);
-							}
-						}
+					                // 🔴 Aquí va la lógica nueva:
+					                enemigosEliminados++;
+					                puntuacion += 100; // suma puntos por enemigo
+
+					                if (enemigosEliminados % 10 == 0) {
+					                    elizabeth.agregarVida(1); // método que suma una vida
+					                }
+					            }
+					        }
+					    }
+
+					    if (elizabeth.getProyectil() != null) {
+					        if (elizabeth.getProyectil().estaFueraDePantalla(entorno)) {
+					            elizabeth.setProyectil(null);
+					        }
+					    }
 					}
 				}
 			}
+		}
+		
 
 		//if (elizabeth.getProyectil() != null && elizabeth.getProyectil().colisionaConEnemigo(enemigo)) { // si colisiona con algún enemigo, lo eliminamos y se vuelve null{
 		//	elizabeth.setProyectil(null);
 		//}
-		}
+		
 	}
 	    private void renovarEnemigos() {
         	for (int i = 0; i < this.enemigos.length; i++) {
