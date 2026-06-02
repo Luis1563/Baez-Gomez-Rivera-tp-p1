@@ -163,17 +163,7 @@ public class Juego extends InterfaceJuego
 				elizabeth.dibujarVidas(entorno);
 			}
 
-			/*if(elizabeth != null) {
-				elizabeth.dibujar(entorno);
-				elizabeth.actualizarFisica(islas, entorno.alto());
-			}*/
-			 //física (gravedad y caída) con límite inferior de pantalla
-
-			//if(elizabeth != null) {
-			//	elizabeth.dibujar(entorno);
-			//elizabeth.actualizarFisica(islas, entorno.alto());
-			//}
-			// física (gravedad y caída) con límite inferior de pantalla
+		
 
 			if(elizabeth != null /* && juegoPerdido == false */) {
 				elizabeth.dibujar(entorno);
@@ -261,10 +251,6 @@ public class Juego extends InterfaceJuego
 				}
 		
 			
-			
-			
-			
-			
 				double velocidad = 3;
 					
 					
@@ -300,14 +286,7 @@ public class Juego extends InterfaceJuego
 					}
 				
 
-				// Movimiento ABAJO (gravedad o tecla abajo)
-				/*if (entorno.estaPresionada(entorno.TECLA_ABAJO) 
-					&& elizabeth.getY() + elizabeth.getAlto()/2 < entorno.alto()) {
-
-					if (!elizabeth.colisionaPorAbajo(islas)) {
-						elizabeth.moverAbajo();
-					}
-				}*/
+				
 
 				// Movimiento ARRIBA (salto)
 				if (elizabeth != null) {
@@ -318,13 +297,6 @@ public class Juego extends InterfaceJuego
 				}
 				
 
-				// Aplicar gravedad automática cuando no está sobre una isla
-				/*if (elizabeth!= null){
-					if (!elizabeth.colisionaPorAbajo(islas)) {
-						elizabeth.moverAbajo();
-					}
-					//this.renovarEnemigos();
-				}*/
 
 				// disparo con botón izquierdo solo si no hay proyectil activo
 				if (entorno.mousePresente() && entorno.sePresionoBoton(entorno.BOTON_IZQUIERDO) && elizabeth.getProyectil() == null) {
@@ -364,10 +336,7 @@ public class Juego extends InterfaceJuego
 		}
 		
 
-		//if (elizabeth.getProyectil() != null && elizabeth.getProyectil().colisionaConEnemigo(enemigo)) { // si colisiona con algún enemigo, lo eliminamos y se vuelve null{
-		//	elizabeth.setProyectil(null);
-		//}
-		
+
 	}
 	    private void renovarEnemigos() {
         	for (int i = 0; i < this.enemigos.length; i++) {
