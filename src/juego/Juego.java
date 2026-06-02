@@ -15,49 +15,48 @@ public class Juego extends InterfaceJuego
 	private Castillo castillo;
 	private Entorno entorno;
 	private Princesa elizabeth;
-	private Proyectil proyectil;
+	//private Proyectil proyectil;
     private Isla[] islas;
 	private Enemigo[] enemigos;
-	private boolean juegoGanado = false; // boolean para pantalla ganadora
+	private boolean juegoGanado; // boolean para pantalla ganadora
 	private boolean juegoTerminado;
 	private double respawnX; // para reiniciar a la princesa
 	private double respawnY;
-
+	
 	
 	// Variables y métodos propios de cada grupo
 	// ...
 	
 	Juego()
 	{
-
-		this.mostrandoInicio = true; //Pantalla de inicio
-		elizabeth = new Princesa(640, 360, 20, 50, 3);
+		
 		// Inicializa el objeto entorno
 		this.entorno = new Entorno(this, "Proyecto para TP", 1280, 720);
+		this.mostrandoInicio = true; //Pantalla de inicio
+		elizabeth = new Princesa(640, 360, 20, 50, 10);
         this.islas = inicializarIslas();
 		this.enemigos = new Enemigo[20];
-		//this.castillo = new Castillo(300, 540, 150, 200);
 
-		proyectil = null; // no hay proyectil activo al inicio
-		// Inicializar lo que haga falta para el juego
-		// ...
+		this.juegoGanado = false; // boolean para pantalla ganadora
 		this.juegoTerminado = false;
+
 		this.respawnX = entorno.ancho() / 2;
 		this.respawnY = entorno.alto() / 2;
+		
 		// Inicia el juego!
 		this.entorno.iniciar();
 	}
-
+	
 	private Isla[] inicializarIslas() {
-        
+		
 		Isla[] misIslas1 = new Isla[50]; //Se toman este tamaños para tener más plataformas
 	    int indice = 0;
 		
 		
         // Islas de piso (fijas) (Para que el jugador no caiga al inicio)
 	    for (int i = 0; i < 16; i++) {
-	        misIslas1[indice] = new Isla(i * 250, entorno.alto() - 10, 200, i);
-				if (i == 15) { //la  número 15 es la última isla de piso, colocamos el castillo sobre ella
+			misIslas1[indice] = new Isla(i * 250, entorno.alto() - 10, 200, i);
+			if (i == 15) { //la  número 15 es la última isla de piso, colocamos el castillo sobre ella
 				double x = misIslas1[indice].getX();
 				double y = misIslas1[indice].getY() - misIslas1[indice].getAlto()/2; // Colocamos el castillo justo encima de la isla
 				
@@ -149,7 +148,7 @@ public class Juego extends InterfaceJuego
 			
 			if(elizabeth != null /* && juegoPerdido == false */) {
 				elizabeth.dibujar(entorno);
-				//elizabeth.actualizarFisica(islas, entorno.alto());
+				elizabeth.actualizarFisica(islas);
 				elizabeth.dibujarVidas(entorno);
 			}
 
@@ -240,11 +239,13 @@ public class Juego extends InterfaceJuego
 			
 			
 				// Movimiento IZQUIERDA
-				if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA) 
-					&& elizabeth.getX() - elizabeth.getAncho()/2 > 0) {
+				if (elizabeth != null){
+					if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA) 
+						&& elizabeth.getX() - elizabeth.getAncho()/2 > 0) {
 
-					if (!elizabeth.colisionaPorIzquierda(islas)) {
-						elizabeth.moverIzquierda();
+						if (elizabeth.puedeMover(- elizabeth.getVelocidadX(), 0, islas)) {
+							elizabeth.moverIzquierda();
+						}
 					}
 				}
 		
@@ -262,11 +263,11 @@ public class Juego extends InterfaceJuego
 						double limiteMovimiento = entorno.ancho() * 0.55; // La princesa puede moverse libremente hasta el 55% del ancho de la pantalla
 					// La princesa se mantiene en el centro, el mapa se desplaza a la izquierda
 
-						if (elizabeth.getX() < limiteMovimiento && !elizabeth.colisionaPorDerecha(islas)) {
+						if (elizabeth.getX() < limiteMovimiento && elizabeth.puedeMover(elizabeth.getVelocidadX(), 0, islas)) {
 							elizabeth.moverDerecha();
 						}
 							
-						else if(elizabeth.getX() >= limiteMovimiento && !elizabeth.colisionaPorDerecha(islas)) { // Solo mueve las islas si la princesa está más allá del centro de la pantalla
+						else if(elizabeth.getX() >= limiteMovimiento && elizabeth.puedeMover(elizabeth.getVelocidadX(), 0, islas)) { // Solo mueve las islas si la princesa está más allá del centro de la pantalla
 							if ((castillo.bordeDerecho() <= entorno.ancho())){
 
 								if (elizabeth.bordeDerecho() < entorno.ancho()){
@@ -289,30 +290,30 @@ public class Juego extends InterfaceJuego
 				
 
 				// Movimiento ABAJO (gravedad o tecla abajo)
-				if (entorno.estaPresionada(entorno.TECLA_ABAJO) 
+				/*if (entorno.estaPresionada(entorno.TECLA_ABAJO) 
 					&& elizabeth.getY() + elizabeth.getAlto()/2 < entorno.alto()) {
 
 					if (!elizabeth.colisionaPorAbajo(islas)) {
 						elizabeth.moverAbajo();
 					}
-				}
+				}*/
 
 				// Movimiento ARRIBA (salto)
-				if (entorno.estaPresionada(entorno.TECLA_ARRIBA) 
-					&& elizabeth.getY() - elizabeth.getAlto()/2 > 0) {
-
-					if (!elizabeth.colisionaPorArriba(islas)) {
-						elizabeth.saltar();
+				if (elizabeth != null) {
+					if (entorno.estaPresionada(entorno.TECLA_ARRIBA) && elizabeth.estaApoyado(islas)) { 
+					// Solo puede saltar si está apoyada sobre una isla
+							elizabeth.saltar();
 					}
 				}
+				
 
 				// Aplicar gravedad automática cuando no está sobre una isla
-				if (elizabeth!= null){
+				/*if (elizabeth!= null){
 					if (!elizabeth.colisionaPorAbajo(islas)) {
 						elizabeth.moverAbajo();
 					}
 					//this.renovarEnemigos();
-				}
+				}*/
 
 				// disparo con botón izquierdo solo si no hay proyectil activo
 				if (entorno.mousePresente() && entorno.sePresionoBoton(entorno.BOTON_IZQUIERDO) && elizabeth.getProyectil() == null) {
