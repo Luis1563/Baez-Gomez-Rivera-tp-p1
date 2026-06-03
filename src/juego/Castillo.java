@@ -2,12 +2,15 @@ package juego;
 
 import java.awt.Color;
 import entorno.Entorno;
+import entorno.Herramientas;
+import java.awt.Image;
 
 public class Castillo {
     private double x;
     private double y;
     private double ancho;
     private double alto;
+    private Image imagen;
 
     
     public Castillo(double x, double y, double ancho, double alto) {
@@ -15,12 +18,13 @@ public class Castillo {
         this.y = y;
         this.ancho = ancho;
         this.alto = alto;
-        //this.imagen = Herramientas.cargarImagen("castillo.png");
+        this.imagen = Herramientas.cargarImagen("castillo.png");
     }
 
     // Se dibuja al final del nivel
     public void dibujar(Entorno e) {
-        e.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, 0, Color.YELLOW);
+        e.dibujarImagen(this.imagen, x, y, 0, 0.3);
+        //e.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, 0, Color.YELLOW);
     }
     
     public void mover(double desplazamiento) {

@@ -1,12 +1,14 @@
 package juego;
 
 import java.awt.Color;
+import java.awt.Image;
 
 import entorno.Entorno;
+import entorno.Herramientas;
 
 public class Princesa {
-    
-    private double x, y;
+    private Entorno entorno;
+    private double x, y, escala;
     private double ancho, alto; 
 	private double velocidadY;
 	private double velocidadX;
@@ -15,32 +17,42 @@ public class Princesa {
 	private Proyectil proyectil;
 	private boolean[] vidas;
 	private int vidasRestantes;
-    //private Image imagen;
+	private Image imagen;
+	private Image imagenVidas;
+	private Image imagenVidasGrises;
     
     
-	public Princesa(double x, double y, double ancho, double alto, int vidasIniciales) {
+	public Princesa(double x, double y, double ancho, double alto, int vidasIniciales, Entorno entorno) {
 		this.x = x;
 		this.y = y;
 		this.ancho = ancho;
 		this.alto = alto;
-
+		this.entorno = entorno;
+		
+		this.escala = 0.09; // Escala para dibujar la imagen
+		this.imagen = Herramientas.cargarImagen("princesa.png");
+		this.imagenVidas = Herramientas.cargarImagen("corazon.png");
+		this.imagenVidasGrises = Herramientas.cargarImagen("corazon_gris.png");
+		
 		this.velocidadY = 0;
 		this.velocidadX = 5;
 		this.gravedad = 0.5; //gravedad para simular la caída
 		this.velocidadMaximaDeCaida = 8; //velocidad máxima de caida
-
+		
 		this.proyectil = null; // No hay proyectil activo al inicio
-		//this.imagen = imagen;
-
+		
+		this.vidasRestantes = vidasIniciales;
 		this.vidas = new boolean[vidasIniciales];
-		for (int i = 0; i < vidasIniciales; i++) {
+		for (int i = 0; i < vidasRestantes; i++) {
 			this.vidas[i] = true;
 		}
-		this.vidasRestantes = vidasIniciales;
 	}
-
+	
+	
 	public void dibujar(Entorno e) {
-		e.dibujarRectangulo(x, y, ancho, alto, 0, Color.RED);
+		
+		e.dibujarImagen(imagen, x, y, 0, escala);
+		// e.dibujarRectangulo(x, y, ancho, alto, 0, Color.RED);
 	}
 
 	public void moverIzquierda() {
@@ -52,7 +64,6 @@ public class Princesa {
 	}
 	
 	public void saltar() { //moverArriba
-		//this.y=this.y-20; //velocidad de salto negativa (va hacia arriba)
 		this.velocidadY = -20; //velocidad de salto negativa (va hacia arriba)
 	}
 	
@@ -155,8 +166,50 @@ public class Princesa {
 		}
 		return false;
 	}
+	
+	
+
+	// Métodos para detectar colisiones con items
+	public boolean colisionaPorIzquierda(Item item) {
+		
+		if (item != null && bordeIzquierdo() <= item.bordeDerecho() && bordeDerecho() > item.bordeDerecho()) {
+			if (bordeInferior() > item.bordeSuperior() && bordeSuperior() < item.bordeInferior()) {
+				return true;				
+			}
+		}
+		return false;
+	}
+
+	
+	public boolean colisionaPorDerecha(Item item) {
+		
+		if (item != null && bordeDerecho() >= item.bordeIzquierdo() && bordeIzquierdo() < item.bordeIzquierdo()) {
+			if (bordeInferior() > item.bordeSuperior() && bordeSuperior() < item.bordeInferior()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean colisionaPorAbajo(Item item) {
+		
+		if (item != null && bordeInferior() >= item.bordeSuperior() && bordeInferior() < item.bordeInferior()) {
+			if (bordeDerecho() > item.bordeIzquierdo() && bordeIzquierdo() < item.bordeDerecho()) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 
+	public boolean colisionaPorArriba(Item item) {
+		if (item != null && bordeSuperior() <= item.bordeInferior() && bordeSuperior() > item.bordeSuperior()) {
+			if (bordeDerecho() > item.bordeIzquierdo() && bordeIzquierdo() < item.bordeDerecho()) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 
 
@@ -194,9 +247,6 @@ public class Princesa {
 
 
 	public void perderVida() {
-		/* if (vidasRestantes <= 0) {
-			return;
-		}*/
 		int indice = -1; // se usa para señalar el ultimo indice que estaba en true, para cambiarlo a false
 		for (int i = vidas.length - 1; i >= 0; i--) {
 			if (vidas[i] == true && indice == -1) {
@@ -206,6 +256,19 @@ public class Princesa {
 		if (indice != -1) {
 			vidas[indice] = false; // Cambia el último corazón en true a false
 			vidasRestantes--;
+		}
+	}
+
+	public void ganarVida() {
+		int indice = -1; // se usa para señalar el primer indice que estaba en false, para cambiarlo a true
+		for (int i = 0; i < vidas.length; i++) {
+			if (vidas[i] == false && indice == -1) {
+				indice = i; // Guardamos el índice del corazón que se ganó
+			}
+		}
+		if (indice != -1) {
+			vidas[indice] = true; // Cambia el primer corazón en false a true
+			vidasRestantes++;
 		}
 	}
 
@@ -221,17 +284,21 @@ public class Princesa {
 
 	public void dibujarVidas(Entorno e) {
 		for (int i = 0; i < vidas.length; i++) {
-			Color color;
+			Image imagen;
+			//Color color;
 			if (vidas[i] == true) {
-				color = Color.RED;
+				imagen = imagenVidas;
+				//color = Color.RED;
 			}
 			else {
-				color = Color.GRAY;
+				imagen = imagenVidasGrises;
+				//color = Color.GRAY;
 			}
 
 			double x = 30 + i * 36; //36 porque el ancho del corazón es 30 y puse un espacio de 6 entre ellos
 			double y = 30;
-			e.dibujarRectangulo(x, y, 30, 30, 0, color);
+			e.dibujarImagen(imagen, x, y, 0, 0.05); // Dibujar imagen del corazón
+			//e.dibujarRectangulo(x, y, 30, 30, 0, color); // Dibujar rectángulo de fondo para el corazón
 		}
 	}
 

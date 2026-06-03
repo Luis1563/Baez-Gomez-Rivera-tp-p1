@@ -18,10 +18,18 @@ public class Juego extends InterfaceJuego
 	//private Proyectil proyectil;
     private Isla[] islas;
 	private Enemigo[] enemigos;
+	private Item item; // Item que puede soltar el enemigo y recoger la princesa
 	private boolean juegoGanado; // boolean para pantalla ganadora
-	private boolean juegoTerminado;
+	private boolean juegoPerdido; // boolean para pantalla de derrota
 	private double respawnX; // para reiniciar a la princesa
 	private double respawnY;
+
+	private Image imagenDerrota; // Imagen para la pantalla de derrota
+	private Image imagenVictoria; // Imagen para la pantalla de victoria
+	private Image portada; // Imagen para la pantalla de inicio
+	private Image fondo; // Imagen de fondo del juego
+
+
 	
 	
 	// Variables y métodos propios de cada grupo
@@ -31,14 +39,21 @@ public class Juego extends InterfaceJuego
 	{
 		
 		// Inicializa el objeto entorno
-		this.entorno = new Entorno(this, "Proyecto para TP", 1280, 720);
+		this.entorno = new Entorno(this, "baez-gomez-rivera-tp-p1", 1280, 720);
 		this.mostrandoInicio = true; //Pantalla de inicio
-		elizabeth = new Princesa(640, 360, 20, 50, 10);
+		elizabeth = new Princesa(640, 360, 35, 90, 10, entorno);
         this.islas = inicializarIslas();
 		this.enemigos = new Enemigo[20];
+		this.item = null; // El item comienza como null, se asignará cuando un enemigo muera
+		this.portada = Herramientas.cargarImagen("portada.png"); // Carga la imagen de portada para la pantalla de inicio
+		this.fondo = Herramientas.cargarImagen("fondo.png"); // Carga la imagen de fondo del juego
+
 
 		this.juegoGanado = false; // boolean para pantalla ganadora
-		this.juegoTerminado = false;
+		this.imagenDerrota = Herramientas.cargarImagen("derrota.png"); // Carga la imagen de derrota
+		this.juegoPerdido = false;
+		this.imagenVictoria = Herramientas.cargarImagen("victoria.png"); // Carga la imagen de victoria
+
 
 		this.respawnX = entorno.ancho() / 2;
 		this.respawnY = entorno.alto() / 2;
@@ -47,6 +62,15 @@ public class Juego extends InterfaceJuego
 		this.entorno.iniciar();
 	}
 	
+	private void reiniciarJuego() {
+		elizabeth = new Princesa(640, 360, 35, 90, 10, entorno);
+		this.islas = inicializarIslas();
+		this.enemigos = new Enemigo[20];
+		this.item = null;
+		this.juegoGanado = false;
+		this.juegoPerdido = false;
+	}
+
 	private Isla[] inicializarIslas() {
 		
 		Isla[] misIslas1 = new Isla[50]; //Se toman este tamaños para tener más plataformas
@@ -54,9 +78,9 @@ public class Juego extends InterfaceJuego
 		
 		
         // Islas de piso (fijas) (Para que el jugador no caiga al inicio)
-	    for (int i = 0; i < 16; i++) {
+	    for (int i = 0; i < 15; i++) {
 			misIslas1[indice] = new Isla(i * 250, entorno.alto() - 10, 200, i);
-			if (i == 15) { //la  número 15 es la última isla de piso, colocamos el castillo sobre ella
+			if (i == 14) { //la  número 15 es la última isla de piso, colocamos el castillo sobre ella
 				double x = misIslas1[indice].getX();
 				double y = misIslas1[indice].getY() - misIslas1[indice].getAlto()/2; // Colocamos el castillo justo encima de la isla
 				
@@ -65,20 +89,20 @@ public class Juego extends InterfaceJuego
 			}
 	        indice++;
 	    }
-
-
-	    //GENERACIÓN POR "COLUMNAS" (Esto Evita la superposición entre las islas)
-
+		
+		
+	    //GENERACIÓN POR "COLUMNAS" (Esto evita la superposición entre las islas)
+		
 	    double avanceX = 25; // Empezamos después del piso inicial
 	    double distanciaEntreColumnas = 250; 
 	    
 	    while (indice < misIslas1.length) {
-	        // Decidimos cuántas islas habrá en esta coordenada X (2 o 3)
+			// Decidimos cuántas islas habrá en esta coordenada X (2 o 3)
 	        int cantidadEnEstaLinea = (int)(Math.random() * 2) + 2; // Da 2 o 3
-
+			
 	        for (int i = 0; i < cantidadEnEstaLinea; i++) {
-	            if (indice < misIslas1.length) {
-	                // Niveles de altura fijos para que no se superpongan verticalmente
+				if (indice < misIslas1.length) {
+					// Niveles de altura fijos para que no se superpongan verticalmente
 	                // Nivel 0: 450px, Nivel 1: 300px, Nivel 2: 150px
 	                double alturaFija = 450 - (i * 150); 
 	                
@@ -96,80 +120,105 @@ public class Juego extends InterfaceJuego
 	    
 	    return misIslas1;
 	}
-
+	
 	/**
 	 * Durante el juego, el método tick() será ejecutado en cada instante y 
 	 * por lo tanto es el método más importante de esta clase. Aquí se debe 
 	 * actualizar el estado interno del juego para simular el paso del tiempo 
 	 * (ver el enunciado del TP para mayor detalle).
-	 */
+	*/
 	
 	
 	public void tick()
 	{
-				// Implementación de pantalla de Inicio
+		// Implementación de pantalla de Inicio
 		if (mostrandoInicio) {
-		    // Configuramos el estilo del texto y el color 
-		    this.entorno.cambiarFont("Arial Black", 60,new Color(0, 150,255)); 
-		    // Escribimos el título en pantalla
-		    this.entorno.escribirTexto("Super Elizabeth Sis", 350, 350);
-		        
-		    this.entorno.cambiarFont("Arial", 30, Color.GREEN);
-		    this.entorno.escribirTexto("Presione ENTER para jugar", 480, 400);
-
-		    // Detecta si el usuario presiona la tecla ENTER para cambiar el estado
-		    if (this.entorno.estaPresionada(this.entorno.TECLA_ENTER)) {
-		        this.mostrandoInicio = false;
-		    }
+			// Configuramos el estilo del texto y el color 
+			this.entorno.colorFondo(new Color(252, 209,0)); // Pinta el fondo de negro
+			this.entorno.dibujarImagen(this.portada, this.entorno.ancho() * 0.82, this.entorno.alto() / 2, 0, 1.2);
+			this.entorno.cambiarFont("Akira Expanded", 60,new Color(0, 150,255)); 
+			// Escribimos el título en pantalla
+			this.entorno.escribirTexto("Super Elizabeth Sis", 40, 350);
+			
+			this.entorno.cambiarFont("Poppins Medium", 30, Color.BLACK);
+			this.entorno.escribirTexto("Presione ENTER para jugar", 40, 400);
+			
+			this.entorno.cambiarFont("Poppins Black", 30, Color.WHITE);
+			this.entorno.escribirTexto("Baez - Gomez - Rivera - TP - P1", 40, entorno.alto() - 30);
+			
+			//this.entorno.dibujarRectangulo(this.entorno.ancho() * 0.88, this.entorno.alto() / 2, this.entorno.ancho()/4, this.entorno.alto(), 0, new Color(252, 209,0));
+			
+			// Detecta si el usuario presiona la tecla ENTER para cambiar el estado
+			if (this.entorno.estaPresionada(this.entorno.TECLA_ENTER)) {
+				this.mostrandoInicio = false;
+			}
+		}
+		else if (this.juegoGanado){
+			// con esto creamos la pantalla de victoria
+			this.entorno.colorFondo(Color.BLACK); // Pinta el fondo de negro
+			
+			// Configuramos la letra y el mensaje de victoria
+			this.entorno.cambiarFont("Akira Expanded", 60, Color.GREEN);
+			this.entorno.escribirTexto("Ganaste", 40, 350);
+			this.entorno.cambiarFont("Poppins Medium", 30, Color.WHITE);
+			this.entorno.escribirTexto("¡Elizabeth liberó a Mario!", 40, 400); 
+			
+			this.entorno.dibujarRectangulo(this.entorno.ancho() / 2 + this.entorno.ancho() / 4, this.entorno.alto() / 2, this.entorno.ancho()/2, this.entorno.alto(), 0, new Color(0, 150,255));
+			this.entorno.dibujarImagen(this.imagenVictoria, this.entorno.ancho() / 2 + this.entorno.ancho() / 4, this.entorno.alto() / 2, 0, 0.8);
+			
+			return; // Corta el tick acá para congelar todo el juego al ganar
+		}
+		else if (juegoPerdido) {
+			
+			this.entorno.colorFondo(Color.BLACK); // Pinta el fondo de negro
+			String mensajeDePerdida= "GAME OVER";
+			this.entorno.cambiarFont("Akira Expanded", 60, Color.RED, 0);
+			this.entorno.escribirTexto(mensajeDePerdida, 40, 350);
+			
+			this.entorno.cambiarFont("Poppins Medium", 30, Color.WHITE);
+			this.entorno.escribirTexto("Presione ENTER para reiniciar", 40, 400);
+			
+			this.entorno.dibujarRectangulo(this.entorno.ancho() / 2 + this.entorno.ancho() / 4, this.entorno.alto() / 2, this.entorno.ancho()/2, this.entorno.alto(), 0, Color.RED);
+			this.entorno.dibujarImagen(this.imagenDerrota, this.entorno.ancho() / 2 + this.entorno.ancho() / 4, this.entorno.alto() / 2 - 25, 0, 0.8);
+			if (this.entorno.estaPresionada(this.entorno.TECLA_ENTER)) {
+				this.juegoPerdido = false; // Reiniciamos el estado de pérdida para permitir jugar de nuevo
+				// Reiniciar el juego
+				this.reiniciarJuego();
+			}
 		}
 		else {
-				if (this.juegoGanado) {// con esto creamos la pantalla de victoria
-                this.entorno.colorFondo(Color.BLACK); // Pinta el fondo de negro
-                
-                // Configuramos la letra y el mensaje de victoria
-                this.entorno.cambiarFont("Arial", 45, Color.WHITE);
-                this.entorno.escribirTexto("¡Ganaste!", 350, 360);
-                this.entorno.escribirTexto("Elizabeth libero a Mario!!!!", 350, 420); 
-                
-                return; // Corta el tick acá para congelar todo el juego al ganar
-            }
-				if (this.castillo != null) {
-					this.castillo.dibujar(entorno);
-					
-					// Si Elizabeth roza el castillo, se activa la victoria
-					if (elizabeth != null && this.castillo.princesaWin(elizabeth)) {
-						this.juegoGanado = true;
-					}
-            }
-
-			this.entorno.colorFondo(new Color(128, 0, 128));
+			this.entorno.dibujarImagen(this.fondo, this.entorno.ancho() / 2, this.entorno.alto() / 2, 0, 0.70);
+			if (this.castillo != null) {
+				this.castillo.dibujar(entorno);
+				
+				// Si Elizabeth roza el castillo, se activa la victoria
+				if (elizabeth != null && this.castillo.princesaWin(elizabeth)) {
+					this.juegoGanado = true;
+				}
+			}
+			
+			//this.entorno.colorFondo(new Color(62, 159,215));
 			//this.castillo.dibujar(entorno);
 			
+			this.renovarEnemigos();
+			for (int i = 0; i < this.enemigos.length; i++) {
+				if (this.enemigos[i] != null) {
+					this.enemigos[i].actualizar(0);
+					this.enemigos[i].dibujar(this.entorno);
+				}
+			}
 			
-			if(elizabeth != null /* && juegoPerdido == false */) {
+			if(elizabeth != null) {
 				elizabeth.dibujar(entorno);
 				elizabeth.actualizarFisica(islas);
 				elizabeth.dibujarVidas(entorno);
 			}
-
-			/*if(elizabeth != null) {
-				elizabeth.dibujar(entorno);
-				elizabeth.actualizarFisica(islas, entorno.alto());
-			}*/
-			 //física (gravedad y caída) con límite inferior de pantalla
-
-			//if(elizabeth != null) {
-			//	elizabeth.dibujar(entorno);
-			//elizabeth.actualizarFisica(islas, entorno.alto());
-			//}
-			// física (gravedad y caída) con límite inferior de pantalla
-
-			if(elizabeth != null /* && juegoPerdido == false */) {
-				elizabeth.dibujar(entorno);
-				//elizabeth.actualizarFisica(islas, entorno.alto());
-				//elizabeth.dibujarVidas(entorno);
+			
+			if (item != null) {
+				item.dibujar(entorno);
 			}
-
+			
+			
 			if (elizabeth != null) {
 				if (elizabeth.bordeSuperior() > entorno.alto()) {
 					//la princesa cayó al vacío, la reiniciamos al medio
@@ -177,7 +226,7 @@ public class Juego extends InterfaceJuego
 					//elizabeth = null;
 
 					if (!elizabeth.estaViva()) {
-						juegoTerminado = true;
+						juegoPerdido = true;
 						elizabeth = null; // La princesa desaparece al perder todas las vidas
 					}
 					else {
@@ -186,10 +235,6 @@ public class Juego extends InterfaceJuego
 				}
 			}
 
-			/*if(elizabeth==null) {
-				elizabeth = new Princesa(entorno.ancho() / 2, entorno.alto() / 2, 20, 50);
-				elizabeth.dibujar(entorno);
-			}*/
 			
 			if(elizabeth!=null){
 				if(elizabeth.getProyectil()!=null) {
@@ -205,18 +250,7 @@ public class Juego extends InterfaceJuego
 				}
 			}	
 
-			
-			
-			this.renovarEnemigos();
 
-			for (int i = 0; i < this.enemigos.length; i++) {
-				if (this.enemigos[i] != null) {
-					this.enemigos[i].actualizar(0);
-					this.enemigos[i].dibujar(this.entorno);
-				}
-			}
-			
-			
 			if (elizabeth != null) {
 
 				for (int i = 0; i < enemigos.length; i++) {
@@ -226,17 +260,19 @@ public class Juego extends InterfaceJuego
 
 						
 						if (!elizabeth.estaViva()) {
-							juegoTerminado = true;
+							juegoPerdido = true;
 							elizabeth = null; // La princesa desaparece al perder todas las vidas
 						} else {
-							elizabeth.reiniciarPosicion(respawnX, respawnY); // reiniciamos la psoción de la princesa al medio si no se queda sin vidas
+							//elizabeth.reiniciarPosicion(respawnX, respawnY); // reiniciamos la psoción de la princesa al medio si no se queda sin vidas
 						}
-						//break; // Salimos del ciclo para evitar múltiples colisiones en un solo tick
 					}
 				}
 			
 			
-			
+				if (elizabeth != null && (elizabeth.colisionaPorAbajo(item) || elizabeth.colisionaPorArriba(item) || elizabeth.colisionaPorDerecha(item) || elizabeth.colisionaPorIzquierda(item))) {
+					elizabeth.ganarVida();
+					item = null; // El item desaparece al colisionar con la princesa
+				}
 			
 				// Movimiento IZQUIERDA
 				if (elizabeth != null){
@@ -287,39 +323,22 @@ public class Juego extends InterfaceJuego
 							}
 						}
 					}
-				
-
-				// Movimiento ABAJO (gravedad o tecla abajo)
-				/*if (entorno.estaPresionada(entorno.TECLA_ABAJO) 
-					&& elizabeth.getY() + elizabeth.getAlto()/2 < entorno.alto()) {
-
-					if (!elizabeth.colisionaPorAbajo(islas)) {
-						elizabeth.moverAbajo();
-					}
-				}*/
-
-				// Movimiento ARRIBA (salto)
-				if (elizabeth != null) {
-					if (entorno.estaPresionada(entorno.TECLA_ARRIBA) && elizabeth.estaApoyado(islas)) { 
-					// Solo puede saltar si está apoyada sobre una isla
+					
+					// Movimiento ARRIBA (salto)
+					if (elizabeth != null) {
+						if (entorno.estaPresionada(entorno.TECLA_ARRIBA) && elizabeth.estaApoyado(islas)) { 
+						// Solo puede saltar si está apoyada sobre una isla
 							elizabeth.saltar();
+						}
+					}
+					
+
+					// disparo con botón izquierdo solo si no hay proyectil activo
+					if (entorno.mousePresente() && entorno.sePresionoBoton(entorno.BOTON_IZQUIERDO) && elizabeth.getProyectil() == null) {
+						elizabeth.disparar(entorno.mouseX(), entorno.mouseY());
 					}
 				}
-				
 
-				// Aplicar gravedad automática cuando no está sobre una isla
-				/*if (elizabeth!= null){
-					if (!elizabeth.colisionaPorAbajo(islas)) {
-						elizabeth.moverAbajo();
-					}
-					//this.renovarEnemigos();
-				}*/
-
-				// disparo con botón izquierdo solo si no hay proyectil activo
-				if (entorno.mousePresente() && entorno.sePresionoBoton(entorno.BOTON_IZQUIERDO) && elizabeth.getProyectil() == null) {
-					elizabeth.disparar(entorno.mouseX(), entorno.mouseY());
-				}
-			}
 				if (elizabeth != null){
 					if (elizabeth.getProyectil() != null) { //si no es null (está activo), lo movemos y dibujamos
 						elizabeth.getProyectil().mover();
@@ -328,10 +347,11 @@ public class Juego extends InterfaceJuego
 						for (int i = 0; i < enemigos.length; i++) {
 							if (elizabeth.getProyectil() != null) {
 								if (enemigos[i] != null && elizabeth.getProyectil().colisionaConEnemigo(enemigos[i])) {
-								enemigos[i] = null; // El enemigo desaparece al ser impactado
-								//renovarEnemigos(); // Renovamos los enemigos para llenar el espacio del enemigo eliminado
-							
-								elizabeth.setProyectil(null); // El proyectil desaparece al impactar
+									if (Math.random() < 0.3) {
+										item = new Item(enemigos[i].getX(), enemigos[i].getY());
+									}
+									enemigos[i] = null; // El enemigo desaparece al ser impactado
+									elizabeth.setProyectil(null); // El proyectil desaparece al impactar
 								}
 							}
 						}
@@ -344,12 +364,10 @@ public class Juego extends InterfaceJuego
 					}
 				}
 			}
-
-		//if (elizabeth.getProyectil() != null && elizabeth.getProyectil().colisionaConEnemigo(enemigo)) { // si colisiona con algún enemigo, lo eliminamos y se vuelve null{
-		//	elizabeth.setProyectil(null);
-		//}
 		}
 	}
+
+	//metodos
 	    private void renovarEnemigos() {
         	for (int i = 0; i < this.enemigos.length; i++) {
             	if (this.enemigos[i] != null) {
@@ -375,7 +393,7 @@ public class Juego extends InterfaceJuego
             	x = entorno.ancho() + 60;
         	}
         	double y = buscarAlturaLibre();
-        	return new Enemigo(x, y, 35, 35, 2.0, direccion);
+        	return new Enemigo(x, y, 45, 35, 2.0, direccion);
     	}
 
     	private double buscarAlturaLibre() {
