@@ -135,7 +135,7 @@ public class Juego extends InterfaceJuego
                 
                 // Configuramos la letra y el mensaje de victoria
                 this.entorno.cambiarFont("Arial", 45, Color.WHITE);
-                this.entorno.escribirTexto("¡Ganaste!", 350, 360);
+                this.entorno.escribirTexto("¡Ganaste!", 500, 360);
                 this.entorno.escribirTexto("Elizabeth libero a Mario!!!!", 350, 420); 
                 
                 return; // Corta el tick acá para congelar todo el juego al ganar
