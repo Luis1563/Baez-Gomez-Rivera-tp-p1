@@ -418,4 +418,14 @@ public class Princesa {
 		this.proyectil = proyectil;
 	}
 
+	public void agregarVida(int i) {
+		// TODO Apéndice de método generado automáticamente
+		
+	}
+
+	public String getVidas() {
+		// TODO Apéndice de método generado automáticamente
+		return null;
+	}
+
 }

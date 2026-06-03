@@ -30,6 +30,10 @@ public class Juego extends InterfaceJuego
 	private Image fondo; // Imagen de fondo del juego
 
 
+	private double velocidadMapa;
+	private int enemigosEliminados;   // contador de enemigos eliminados
+	private int puntuacion;           // sistema de puntos
+
 	
 	
 	// Variables y métodos propios de cada grupo
@@ -57,7 +61,10 @@ public class Juego extends InterfaceJuego
 
 		this.respawnX = entorno.ancho() / 2;
 		this.respawnY = entorno.alto() / 2;
-		
+
+		this.enemigosEliminados = 0;
+		this.puntuacion = 0;
+
 		// Inicia el juego!
 		this.entorno.iniciar();
 	}
@@ -186,6 +193,7 @@ public class Juego extends InterfaceJuego
 				this.reiniciarJuego();
 			}
 		}
+		//inicia el juego normal
 		else {
 			this.entorno.dibujarImagen(this.fondo, this.entorno.ancho() / 2, this.entorno.alto() / 2, 0, 0.70);
 			if (this.castillo != null) {
@@ -198,6 +206,27 @@ public class Juego extends InterfaceJuego
 			}
 			
 			//this.entorno.colorFondo(new Color(62, 159,215));
+			
+			if (this.castillo != null) {
+				this.castillo.dibujar(entorno);
+				
+				// Si Elizabeth roza el castillo, se activa la victoria
+				if (elizabeth != null && this.castillo.princesaWin(elizabeth)) {
+					this.juegoGanado = true;
+				}
+            }
+
+
+			entorno.cambiarFont("Arial", 20, Color.GREEN);
+			entorno.escribirTexto("Puntos: " + puntuacion, 400, 30);
+
+			if (enemigosEliminados % 10 == 0 && enemigosEliminados > 0) {
+			    entorno.cambiarFont("Arial", 20, Color.GREEN);
+			    entorno.escribirTexto("¡Vida extra obtenida!", 800, 30);
+				elizabeth.ganarVida();
+			}
+
+			//this.entorno.colorFondo(new Color(128, 0, 128));
 			//this.castillo.dibujar(entorno);
 			
 			this.renovarEnemigos();
@@ -250,7 +279,18 @@ public class Juego extends InterfaceJuego
 				}
 			}	
 
+			
+			
+			//this.renovarEnemigos();
 
+			for (int i = 0; i < this.enemigos.length; i++) {
+				if (this.enemigos[i] != null) {
+					this.enemigos[i].actualizar(this.velocidadMapa);
+					this.enemigos[i].dibujar(this.entorno);
+				}
+			}
+			
+			
 			if (elizabeth != null) {
 
 				for (int i = 0; i < enemigos.length; i++) {
@@ -286,15 +326,15 @@ public class Juego extends InterfaceJuego
 				}
 		
 			
+
 			
-			
-			
-			
+
 				double velocidad = 3;
 					
 					
 				// Movimiento DERECHA
 				if (elizabeth != null){
+					this.velocidadMapa = 0;
 					if (entorno.estaPresionada(entorno.TECLA_DERECHA)){ 
 						double limiteMovimiento = entorno.ancho() * 0.55; // La princesa puede moverse libremente hasta el 55% del ancho de la pantalla
 					// La princesa se mantiene en el centro, el mapa se desplaza a la izquierda
@@ -314,6 +354,7 @@ public class Juego extends InterfaceJuego
 								}
 							}
 							else {
+								this.velocidadMapa = velocidad;
 								this.castillo.mover(-velocidad); // El castillo se acerca solo si EXISTE
 								for (int i = 0; i < islas.length; i++) {
 									if (islas[i] != null) { // Solo mueve las islas si la princesa está más allá del centro de la pantalla
@@ -338,6 +379,8 @@ public class Juego extends InterfaceJuego
 						elizabeth.disparar(entorno.mouseX(), entorno.mouseY());
 					}
 				}
+
+
 
 				if (elizabeth != null){
 					if (elizabeth.getProyectil() != null) { //si no es null (está activo), lo movemos y dibujamos
@@ -365,7 +408,10 @@ public class Juego extends InterfaceJuego
 				}
 			}
 		}
+	
 	}
+		
+	
 
 	//metodos
 	    private void renovarEnemigos() {
