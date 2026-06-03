@@ -217,6 +217,7 @@ public class Princesa {
 		this.x = x;
 		this.y = y;
 		this.velocidadY = 0;
+<<<<<<< HEAD
 		int numeroDeVidas = 0;
 		this.vidas = new boolean[numeroDeVidas];
 		
@@ -243,6 +244,25 @@ public class Princesa {
 	    }
 	    
 	}*/
+=======
+	}
+
+	public void dibujarVidas(Entorno e) {
+		for (int i = 0; i < vidas.length; i++) {
+			Color color;
+			if (vidas[i] == true) {
+				color = Color.RED;
+			}
+			else {
+				color = Color.GRAY;
+			}
+
+			double x = 30 + i * 36; //36 porque el ancho del corazón es 30 y puse un espacio de 6 entre ellos
+			double y = 30;
+			e.dibujarRectangulo(x, y, 30, 30, 0, color);
+		}
+	}
+>>>>>>> 3c9c6ef5fe2463534e5f515fc248b796da3a00a1
 
 
     // Comprueba si la princesa puede moverse por x e y antes de moverla, (colisiones con islas)
@@ -360,6 +380,7 @@ public class Princesa {
 		this.proyectil = proyectil;
 	}
 
+<<<<<<< HEAD
 	public void agregarVida(int i) {
 		// TODO Apéndice de método generado automáticamente
 		
@@ -370,4 +391,6 @@ public class Princesa {
 		return null;
 	}
 
+=======
+>>>>>>> 3c9c6ef5fe2463534e5f515fc248b796da3a00a1
 }
