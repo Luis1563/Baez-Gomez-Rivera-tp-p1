@@ -22,7 +22,7 @@ public class Juego extends InterfaceJuego
 	private boolean juegoTerminado;
 	private double respawnX; // para reiniciar a la princesa
 	private double respawnY;
-
+	private double velocidadMapa;
 	private int enemigosEliminados;   // contador de enemigos eliminados
 	private int puntuacion;           // sistema de puntos
 
@@ -214,7 +214,7 @@ public class Juego extends InterfaceJuego
 
 			for (int i = 0; i < this.enemigos.length; i++) {
 				if (this.enemigos[i] != null) {
-					this.enemigos[i].actualizar(0);
+					this.enemigos[i].actualizar(this.velocidadMapa);
 					this.enemigos[i].dibujar(this.entorno);
 				}
 			}
@@ -261,6 +261,7 @@ public class Juego extends InterfaceJuego
 					
 				// Movimiento DERECHA
 				if (elizabeth != null){
+					this.velocidadMapa = 0;
 					if (entorno.estaPresionada(entorno.TECLA_DERECHA)){ 
 						double limiteMovimiento = entorno.ancho() * 0.55; // La princesa puede moverse libremente hasta el 55% del ancho de la pantalla
 					// La princesa se mantiene en el centro, el mapa se desplaza a la izquierda
@@ -280,6 +281,7 @@ public class Juego extends InterfaceJuego
 								}
 							}
 							else {
+								this.velocidadMapa = velocidad;
 								this.castillo.mover(-velocidad); // El castillo se acerca solo si EXISTE
 								for (int i = 0; i < islas.length; i++) {
 									if (islas[i] != null) { // Solo mueve las islas si la princesa está más allá del centro de la pantalla

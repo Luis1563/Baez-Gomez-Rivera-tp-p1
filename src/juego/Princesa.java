@@ -217,34 +217,6 @@ public class Princesa {
 		this.x = x;
 		this.y = y;
 		this.velocidadY = 0;
-<<<<<<< HEAD
-		int numeroDeVidas = 0;
-		this.vidas = new boolean[numeroDeVidas];
-		
-	}
-
-	public void dibujarVidas(Entorno e) {
-	    for (int i = 0; i < vidas.length; i++) {
-	        Color color = vidas[i] ? Color.RED : Color.GRAY;
-	        double x = 20 + i * 36;
-	        double y = 30;
-	        e.dibujarRectangulo(x, y, 30, 30, 0, color);
-	    }
-	        
-	    }
-
-	    // Texto con cantidad de vidas activas
-	  /*  int cantidadVivas = 0;
-	    for (boolean v : vidas) {
-	        if (v) cantidadVivas++;
-	    }
-	    if (cantidadVivas > 0) {
-	        e.cambiarFont("Arial", 20, Color.WHITE);
-	        e.escribirTexto("Vidas: " + cantidadVivas, 20, 25);
-	    }
-	    
-	}*/
-=======
 	}
 
 	public void dibujarVidas(Entorno e) {
@@ -262,7 +234,6 @@ public class Princesa {
 			e.dibujarRectangulo(x, y, 30, 30, 0, color);
 		}
 	}
->>>>>>> 3c9c6ef5fe2463534e5f515fc248b796da3a00a1
 
 
     // Comprueba si la princesa puede moverse por x e y antes de moverla, (colisiones con islas)
@@ -380,7 +351,6 @@ public class Princesa {
 		this.proyectil = proyectil;
 	}
 
-<<<<<<< HEAD
 	public void agregarVida(int i) {
 		// TODO Apéndice de método generado automáticamente
 		
@@ -391,6 +361,4 @@ public class Princesa {
 		return null;
 	}
 
-=======
->>>>>>> 3c9c6ef5fe2463534e5f515fc248b796da3a00a1
 }

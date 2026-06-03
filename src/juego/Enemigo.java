@@ -34,6 +34,9 @@ public class Enemigo {
     public void actualizar(double velocidadMapa) {
         this.mover();
         this.x = this.x - velocidadMapa;
+        if (this.direccion == -1) {
+            this.x = this.x + (velocidadMapa * 0.2);
+    }
     }
 
     // public void esquivarIslas(Isla[] islas) {
