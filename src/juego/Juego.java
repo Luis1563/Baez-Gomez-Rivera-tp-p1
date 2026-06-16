@@ -43,90 +43,125 @@ public class Juego extends InterfaceJuego
 	{
 		
 		// Inicializa el objeto entorno
-		this.entorno = new Entorno(this, "baez-gomez-rivera-tp-p1", 1280, 720);
-		this.mostrandoInicio = true; //Pantalla de inicio
-		elizabeth = new Princesa(640, 360, 35, 90, 10, entorno);
-        this.islas = inicializarIslas();
-		this.enemigos = new Enemigo[20];
-		this.item = null; // El item comienza como null, se asignará cuando un enemigo muera
-		this.portada = Herramientas.cargarImagen("portada.png"); // Carga la imagen de portada para la pantalla de inicio
-		this.fondo = Herramientas.cargarImagen("fondo.png"); // Carga la imagen de fondo del juego
+				this.entorno = new Entorno(this, "baez-gomez-rivera-tp-p1", 1280, 720);
+				this.mostrandoInicio = true; //Pantalla de inicio
+				elizabeth = new Princesa(200, 100, 20, 50, 10, entorno);
+		        this.islas = inicializarIslas();
+				this.enemigos = new Enemigo[20];
+				this.item = null; // El item comienza como null, se asignará cuando un enemigo muera
+				this.portada = Herramientas.cargarImagen("portada.png"); // Carga la imagen de portada para la pantalla de inicio
+				this.fondo = Herramientas.cargarImagen("fondo.png"); // Carga la imagen de fondo del juego
 
 
-		this.juegoGanado = false; // boolean para pantalla ganadora
-		this.imagenDerrota = Herramientas.cargarImagen("derrota.png"); // Carga la imagen de derrota
-		this.juegoPerdido = false;
-		this.imagenVictoria = Herramientas.cargarImagen("victoria.png"); // Carga la imagen de victoria
+				this.juegoGanado = false; // boolean para pantalla ganadora
+				this.imagenDerrota = Herramientas.cargarImagen("derrota.png"); // Carga la imagen de derrota
+				this.juegoPerdido = false;
+				this.imagenVictoria = Herramientas.cargarImagen("victoria.png"); // Carga la imagen de victoria
 
 
-		this.respawnX = entorno.ancho() / 2;
-		this.respawnY = entorno.alto() / 2;
+				this.respawnX = 200;
+				this.respawnY = 100;
 
-		this.enemigosEliminados = 0;
-		this.puntuacion = 0;
+				this.enemigosEliminados = 0;
+				this.puntuacion = 0;
 
-		// Inicia el juego!
-		this.entorno.iniciar();
-	}
-	
-	private void reiniciarJuego() {
-		elizabeth = new Princesa(640, 360, 35, 90, 10, entorno);
-		this.islas = inicializarIslas();
-		this.enemigos = new Enemigo[20];
-		this.item = null;
-		this.juegoGanado = false;
-		this.juegoPerdido = false;
-	}
-
-	private Isla[] inicializarIslas() {
-		
-		Isla[] misIslas1 = new Isla[50]; //Se toman este tamaños para tener más plataformas
-	    int indice = 0;
-		
-		
-        // Islas de piso (fijas) (Para que el jugador no caiga al inicio)
-	    for (int i = 0; i < 15; i++) {
-			misIslas1[indice] = new Isla(i * 250, entorno.alto() - 10, 200, i);
-			if (i == 14) { //la  número 15 es la última isla de piso, colocamos el castillo sobre ella
-				double x = misIslas1[indice].getX();
-				double y = misIslas1[indice].getY() - misIslas1[indice].getAlto()/2; // Colocamos el castillo justo encima de la isla
-				
-				this.castillo = new Castillo(x, y, 160, 200);
-				this.castillo.setY(this.castillo.getY() - this.castillo.getAlto()/2); // Ajustamos la posición del castillo para que esté sobre la isla
+				// Inicia el juego!
+				this.entorno.iniciar();
 			}
-	        indice++;
-	    }
-		
-		
-	    //GENERACIÓN POR "COLUMNAS" (Esto evita la superposición entre las islas)
-		
-	    double avanceX = 25; // Empezamos después del piso inicial
-	    double distanciaEntreColumnas = 250; 
-	    
-	    while (indice < misIslas1.length) {
-			// Decidimos cuántas islas habrá en esta coordenada X (2 o 3)
-	        int cantidadEnEstaLinea = (int)(Math.random() * 2) + 2; // Da 2 o 3
 			
-	        for (int i = 0; i < cantidadEnEstaLinea; i++) {
-				if (indice < misIslas1.length) {
-					// Niveles de altura fijos para que no se superpongan verticalmente
-	                // Nivel 0: 450px, Nivel 1: 300px, Nivel 2: 150px
-	                double alturaFija = 450 - (i * 150); 
-	                
-	                // Agregamos una pequeña variación en X para que no sea una línea perfecta
-	                double variacionX = (Math.random() * 50) - 10; 
-	                
-	                misIslas1[indice] = new Isla(avanceX + variacionX, alturaFija, 120, variacionX);
-	                indice++;
-	            }
-	        }
-	        
-	        // Avanzamos en X para la siguiente "tanda" de islas
-	        avanceX += distanciaEntreColumnas;
-	    }
-	    
-	    return misIslas1;
-	}
+			private void reiniciarJuego() {
+				elizabeth = new Princesa(640, 360, 35, 90, 10, entorno);
+				this.islas = inicializarIslas();
+				this.enemigos = new Enemigo[20];
+				this.item = null;
+				this.juegoGanado = false;
+				this.juegoPerdido = false;
+			}
+
+			private Isla[] inicializarIslas() {
+			    // Elevamos la capacidad a 120 para tener una densidad masiva estilo Mario Bros
+			    Isla[] misIslas1 = new Isla[120]; 
+			    int indice = 0;
+			    
+			    // 1. ISLAS DE PISO (FIJAS) - Se conservan intactas
+			    for (int i = 0; i < 16; i++) {
+			        misIslas1[indice] = new Isla(i * 250, entorno.alto() - 10, 200, i);
+			        if (i == 15) { 
+			            double x = misIslas1[indice].getX();
+			            double y = misIslas1[indice].getY() - misIslas1[indice].getAlto() / 2;
+			            
+			            this.castillo = new Castillo(x, y, 160, 200);
+			            this.castillo.setY(this.castillo.getY() - this.castillo.getAlto() / 2);
+			        }
+			        indice++;
+			    }
+
+			    // 2. GENERACIÓN (Por capas de altura y alta densidad)
+			    int altoIslaEstandar = 30; 
+			    int margenX = 20; // Margen horizontal mínimo para que puedan estar casi pegadas
+			    int margenY = 55; // Margen vertical reducido para permitir capas más juntas
+
+			    // Definimos las 3 alturas fijas basadas en el alto de tu pantalla (720)
+			    double alturaBaja  = 540; // ¡Cerca del piso! Accesible con un mini salto.
+			    double alturaMedia = 350; // Altura intermedia.
+			    double alturaAlta  = 220; // Altura superior para caminos elevados.
+
+			    double xActual = 300; // Empezamos más temprano en el mapa
+			    double finX = 4400;   
+
+			    while (xActual < finX && indice < misIslas1.length) {
+			        
+			        // Elegimos un tamaño de isla aleatorio
+			        int anchoIslaVariable;
+			        double randTipo = Math.random();
+			        if (randTipo < 0.30) {
+			            anchoIslaVariable = 250; 
+			        } else if (randTipo < 0.80) {
+			            anchoIslaVariable = 120; 
+			        } else {
+			            anchoIslaVariable = 60;  
+			        }
+
+			        double[] alturasPosibles = {alturaBaja, alturaMedia, alturaAlta};
+			        
+			        for (double alturaDestino : alturasPosibles) {
+			            if (Math.random() < 0.55) { 
+			                
+			                double randX = xActual + (Math.random() * 20 - 10); 
+			                double randY = alturaDestino;
+
+			                boolean superpuesto = false;
+
+			                // VALIDACIÓN DE COLISIÓN
+			                for (int i = 0; i < indice; i++) {
+			                    if (misIslas1[i] != null) {
+			                        double distanciaX = Math.abs(randX - misIslas1[i].getX());
+			                        double distanciaY = Math.abs(randY - misIslas1[i].getY());
+
+			                        double anchoIslaExistente = misIslas1[i].getAncho(); 
+			                        double distanciaMinimaX = (anchoIslaVariable / 2.0) + (anchoIslaExistente / 2.0) + margenX;
+
+			                        if (distanciaX < distanciaMinimaX && distanciaY < (altoIslaEstandar + margenY)) {
+			                            superpuesto = true;
+			                            break; 
+			                        }
+			                    }
+			                }
+
+			                // Si el espacio está limpio, construimos la isla flotante
+			                if (!superpuesto && indice < misIslas1.length) {
+			                    misIslas1[indice] = new Isla(randX, randY, anchoIslaVariable, 0);
+			                    indice++;
+			                }
+			            }
+			        }
+
+			        xActual += (anchoIslaVariable / 2.0) + 50; 
+			    }
+			    
+			    return misIslas1; // <--- DEVUELVE TU MAPA LLENO DE ENTRADAS REALES
+			}	
+
 	
 	/**
 	 * Durante el juego, el método tick() será ejecutado en cada instante y 
