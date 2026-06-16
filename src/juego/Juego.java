@@ -74,7 +74,7 @@ public class Juego extends InterfaceJuego
 	}
 
 	private void reiniciarJuego() {
-		elizabeth = new Princesa(640, 360, 30, 80, 10, entorno);
+		elizabeth = new Princesa(200, 100, 30, 80, 10, entorno);
 		this.islas = inicializarIslas();
 		this.velocidadMapa = 3;
 		this.enemigos = new Enemigo[20];
