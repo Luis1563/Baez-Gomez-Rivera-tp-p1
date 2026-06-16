@@ -329,6 +329,15 @@ public class Princesa {
         return true;
     }
 
+	public boolean estaEnlimiteMovimiento(double x, double y) {
+		double limiteMovimiento = entorno.ancho() * 0.55; // La princesa puede moverse hasta el 55% del ancho de la pantalla
+
+		if (this.x + x > limiteMovimiento){
+			return true;
+		}
+		return false;
+	}
+
 
 	// Aplica gravedad y actualiza posición. altoPantalla es la parte superior de la pantalla para limitar el salto.
 	public void actualizarFisica(Isla[] islas) {
@@ -419,13 +428,10 @@ public class Princesa {
 	}
 
 	public void agregarVida(int i) {
-		// TODO Apéndice de método generado automáticamente
-		
 	}
 
-	public String getVidas() {
-		// TODO Apéndice de método generado automáticamente
-		return null;
+	public boolean[] getVidas() {
+		return vidas;
 	}
 
 }

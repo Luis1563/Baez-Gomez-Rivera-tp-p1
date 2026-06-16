@@ -43,16 +43,18 @@ public class Enemigo {
         this.x = this.x - velocidadMapa;
         if (this.direccion == -1) {
             this.x = this.x + (velocidadMapa * 0.2);
-    }
+        }
     }
 
-    public void soltarItem(Entorno entorno) {
-        if (Math.random() < 0.3) { // 30% de probabilidad de soltar un item
+    public Item soltarItem(Entorno entorno) {
+        //if (Math.random() < 0.3) { // 30% de probabilidad de soltar un item
             Item item = new Item(this.x, this.y); // Creamos un nuevo item en la posición del enemigo
             // entorno.dibujarImagen(Herramientas.cargarImagen("item.png"), this.x, this.y, 0, 0.05);
-            item.dibujar(entorno);
-            System.out.println("¡El enemigo ha soltado un item!");
-        }
+            return item;
+            //item.dibujar(entorno);
+
+            //System.out.println("¡El enemigo ha soltado un item!");
+        //}
     }
 
     // public void esquivarIslas(Isla[] islas) {
