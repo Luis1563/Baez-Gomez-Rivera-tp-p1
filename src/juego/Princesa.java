@@ -29,7 +29,7 @@ public class Princesa {
 		this.alto = alto;
 		this.entorno = entorno;
 		
-		this.escala = 0.09; // Escala para dibujar la imagen
+		this.escala = 0.082; // Escala para dibujar la imagen
 		this.imagen = Herramientas.cargarImagen("princesa.png");
 		this.imagenVidas = Herramientas.cargarImagen("corazon.png");
 		this.imagenVidasGrises = Herramientas.cargarImagen("corazon_gris.png");
@@ -52,7 +52,7 @@ public class Princesa {
 	public void dibujar(Entorno e) {
 		
 		e.dibujarImagen(imagen, x, y, 0, escala);
-		// e.dibujarRectangulo(x, y, ancho, alto, 0, Color.RED);
+		//e.dibujarRectangulo(x, y, ancho, alto, 0, Color.RED);
 	}
 
 	public void moverIzquierda() {
@@ -64,7 +64,7 @@ public class Princesa {
 	}
 	
 	public void saltar() { //moverArriba
-		this.velocidadY = -20; //velocidad de salto negativa (va hacia arriba)
+		this.velocidadY = -18; //velocidad de salto negativa (va hacia arriba)
 	}
 	
 	public void moverAbajo() {
@@ -394,7 +394,7 @@ public class Princesa {
 		this.alto = alto;
 	}
 
-	
+
 
 	public double getVelocidadY() {
 		return velocidadY;
