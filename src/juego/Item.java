@@ -24,7 +24,11 @@ public class Item {
         //e.dibujarRectangulo(x, y, ancho, alto, 0, new Color(255, 0, 0));
         e.dibujarImagen(this.imagen, x, y, 0, 0.05);
     }
-
+    
+    public void mover(double desplazamiento) {
+        // Modifica la coordenada x sumando o restando el valor recibido
+        this.x += desplazamiento; 
+    }
 
     public double bordeDerecho() {
 		return this.x+this.ancho/2;

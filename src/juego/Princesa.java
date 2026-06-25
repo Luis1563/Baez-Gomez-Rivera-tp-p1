@@ -17,6 +17,7 @@ public class Princesa {
 	private Proyectil proyectil;
 	private boolean[] vidas;
 	private int vidasRestantes;
+	private int vidasIniciales;
 	private Image imagen;
 	private Image imagenVidas;
 	private Image imagenVidasGrises;
@@ -28,6 +29,7 @@ public class Princesa {
 		this.ancho = ancho;
 		this.alto = alto;
 		this.entorno = entorno;
+		this.vidasIniciales = vidasIniciales;
 		
 		this.escala = 0.082; // Escala para dibujar la imagen
 		this.imagen = Herramientas.cargarImagen("princesa.png");
@@ -394,6 +396,26 @@ public class Princesa {
 		this.alto = alto;
 	}
 
+	
+
+
+	public int getVidasIniciales() {
+		return vidasIniciales;
+	}
+
+
+	public void setVidasIniciales(int vidasIniciales) {
+		this.vidasIniciales = vidasIniciales;
+	}
+
+
+	public int getVidasRestantes() {
+		return vidasRestantes;
+	}
+
+	public void setVidasRestantes(int vidasRestantes) {
+		this.vidasRestantes = vidasRestantes;
+	}
 
 
 	public double getVelocidadY() {
