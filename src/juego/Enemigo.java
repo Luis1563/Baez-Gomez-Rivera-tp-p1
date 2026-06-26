@@ -13,6 +13,7 @@ public class Enemigo {
     private double velocidad;
     private int direccion; // 1 = Derecha, -1 = Izquierda
     private Image imagen;
+    private Image imagenInvertida;
     private Item item; // Item que el enemigo puede soltar al morir
 
     // Constructor
@@ -23,13 +24,21 @@ public class Enemigo {
         this.alto = alto;
         this.velocidad = velocidad;
         this.direccion = direccion;
+       // this.imagen = determinarImagen();
         this.imagen = Herramientas.cargarImagen("enemigo.png");
+        this.imagenInvertida = Herramientas.cargarImagen("enemigoInvertido.png");
         this.item = new Item(this.x, this.y);
     }
 
-    
+
+
     public void dibujar(Entorno e) {
-        e.dibujarImagen(this.imagen, x, y, 0, 0.08);
+        if (this.direccion == 1){
+            e.dibujarImagen(this.imagen, x, y, 0, 0.08);
+        }
+        else{
+            e.dibujarImagen(this.imagenInvertida, x, y, 0, 0.08);
+        }
         //e.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, 0, Color.BLUE);
     }
 
@@ -42,29 +51,15 @@ public class Enemigo {
         this.mover();
         this.x = this.x - velocidadMapa;
         if (this.direccion == -1) {
-            this.x = this.x + (velocidadMapa * 0.2);
+            this.x = this.x + (velocidadMapa);
         }
     }
 
     public Item soltarItem(Entorno entorno) {
-        //if (Math.random() < 0.3) { // 30% de probabilidad de soltar un item
             Item item = new Item(this.x, this.y); // Creamos un nuevo item en la posición del enemigo
-            // entorno.dibujarImagen(Herramientas.cargarImagen("item.png"), this.x, this.y, 0, 0.05);
             return item;
-            //item.dibujar(entorno);
-
-            //System.out.println("¡El enemigo ha soltado un item!");
-        //}
     }
 
-    // public void esquivarIslas(Isla[] islas) {
-    //     for (Isla isla : islas) {
-    //         if (isla != null) {
-    //             if (this.colisionaConIsla(isla)) {
-    //                 this.direccion = this.direccion * -1; 
-    //             }
-    //         }
-    // }
 
     public boolean colisionaConIsla(Isla isla) {
         return this.bordeDerecho() >= isla.bordeIzquierdo() && 
@@ -85,6 +80,17 @@ public class Enemigo {
     public double bordeIzquierdo() { return this.x - this.ancho / 2; }
     public double bordeInferior() { return this.y + this.alto / 2; }
     public double bordeSuperior() { return this.y - this.alto / 2; }
+
+    
+    public double getVelocidad() {
+        return velocidad;
+    }
+
+
+    public void setVelocidad(double velocidad) {
+        this.velocidad = velocidad;
+    }
+
 
     public double getX() { return x; }
     public int getDireccion(){return direccion;}

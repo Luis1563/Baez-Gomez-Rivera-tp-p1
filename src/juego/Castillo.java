@@ -23,7 +23,7 @@ public class Castillo {
 
     // Se dibuja al final del nivel
     public void dibujar(Entorno e) {
-        e.dibujarImagen(this.imagen, x, y, 0, 0.3);
+        e.dibujarImagen(this.imagen, x, y, 0, 0.275);
         //e.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, 0, Color.YELLOW);
     }
     

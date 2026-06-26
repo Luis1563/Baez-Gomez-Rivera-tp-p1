@@ -16,6 +16,7 @@ public class Juego extends InterfaceJuego
 	private Entorno entorno;
 	private Princesa elizabeth;
 	//private Proyectil proyectil;
+	private int islasPiso;
     private Isla[] islas;
 	private Enemigo[] enemigos;
 	private Item[] items; // Item que puede soltar el enemigo y recoger la princesa
@@ -46,8 +47,9 @@ public class Juego extends InterfaceJuego
 		// Inicializa el objeto entorno
 		this.entorno = new Entorno(this, "baez-gomez-rivera-tp-p1", 1280, 720);
 		this.mostrandoInicio = true; //Pantalla de inicio
-		elizabeth = new Princesa(200, 100, 30, 80, 10, entorno);
-		this.islas = inicializarIslas();
+		elizabeth = new Princesa(200, 100, 30, 80, 10, entorno, 1);
+		this.islasPiso = 15; // Esto va a determinar el largo del mapa
+		this.islas = inicializarIslas(this.islasPiso);
 		this.velocidadMapa = 3;
 		this.enemigos = new Enemigo[20];
 		//this.item = null; // El item comienza como null, se asignará cuando un enemigo muera
@@ -74,8 +76,8 @@ public class Juego extends InterfaceJuego
 	}
 
 	private void reiniciarJuego() {
-		elizabeth = new Princesa(200, 100, 30, 80, 10, entorno);
-		this.islas = inicializarIslas();
+		elizabeth = new Princesa(200, 100, 30, 80, 10, entorno, 1);
+		this.islas = inicializarIslas(this.islasPiso);
 		this.velocidadMapa = 3;
 		this.enemigos = new Enemigo[20];
 		//this.item = null;
@@ -89,87 +91,88 @@ public class Juego extends InterfaceJuego
 		this.duracionMensaje = 200;
 	}
 
-	private Isla[] inicializarIslas() {
-		// Elevamos la capacidad a 120 para tener una densidad masiva estilo Mario Bros
-		Isla[] misIslas1 = new Isla[100]; 
-		int indice = 0;
+	private Isla[] inicializarIslas(int islasPisoParametro) {
 
-		// 1. ISLAS DE PISO (FIJAS) - Se conservan intactas
-		for (int i = 0; i < 16; i++) {
-			misIslas1[indice] = new Isla(i * 250, entorno.alto() - 10, 200, i);
-			if (i == 15) { 
-			    double x = misIslas1[indice].getX();
-			    double y = misIslas1[indice].getY() - misIslas1[indice].getAlto() / 2;
 
-			    this.castillo = new Castillo(x, y, 160, 200);
-			    this.castillo.setY(this.castillo.getY() - this.castillo.getAlto() / 2);
+		Isla[] islas = new Isla[500]; // cantidad maxima de islas que se pueden crear
+
+		int islasPiso = islasPisoParametro;
+		//double islasFlotantes = 30;
+
+		// creamos todas las islas de piso
+		for (int i = 0; i < islasPiso; i++){
+			islas[i] = new Isla(i *250 , entorno.alto() - 10, 200, 20);
+			
+			// Accomodamos las islas para que solo se vean dentro de la pantalla
+			islas[i].setX(islas[i].getX() + islas[i].getAncho()/2);
+			//islas[i].setX(islas[i].bordeIzquierdo());
+			
+			if (i == islasPiso -1) { // Si es la última isla de piso, colocamos el castillo sobre ella
+				double x = islas[i].getX();
+				double y = islas[i].getY() - islas[i].getAlto() / 2; // Coloca el castillo justo encima de la isla
+				
+				this.castillo = new Castillo(x, y, 160, 200);
+				this.castillo.setY(this.castillo.getY() - this.castillo.getAlto()/2);
 			}
-			indice++;
 		}
+		
 
-		// 2. GENERACIÓN (Por capas de altura y alta densidad)
-		int altoIslaEstandar = 30; 
-		int margenX = 20; // Margen horizontal mínimo para que puedan estar casi pegadas
-		int margenY = 55; // Margen vertical reducido para permitir capas más juntas
-		// Definimos las 3 alturas fijas
-		double alturaBaja  = 540; // Cerca del piso Accesible con un mini salto.
-		double alturaMedia = 350; // Altura intermedia.
-		double alturaAlta  = 220; // Altura superior para caminos elevados.
+		int indice = 1;
+		for (int i = islasPiso; i < (islas.length); i++){
+			double yIslas1 = 200;
+			double yIslas2 = 350;
+			double yIslas3 = 500;
+			//double distanciaMinimaEnX = 100;
 
-		double xActual = 300; // Empezamos más temprano en el mapa
-		double finX = 4400;   
-
-		while (xActual < finX && indice < misIslas1.length) {
-			// Elegimos un tamaño de isla aleatorio
-			int anchoIslaVariable;
-			double randTipo = Math.random();
-			if (randTipo < 0.30) {
-			    anchoIslaVariable = 250; 
-			} else if (randTipo < 0.80) {
-			    anchoIslaVariable = 120; 
-			} else {
-			    anchoIslaVariable = 60;  
+			double anchoIsla = Math.random() * 200;
+			while (anchoIsla < 90){
+				anchoIsla = Math.random() * 200;
 			}
-
-			double[] alturasPosibles = {alturaBaja, alturaMedia, alturaAlta};
-
-			for (double alturaDestino : alturasPosibles) {
-			    if (Math.random() < 0.55) { 
-
-			        double randX = xActual + (Math.random() * 20 - 10); 
-			        double randY = alturaDestino;
-
-			        boolean superpuesto = false;
-
-			        // VALIDACIÓN DE COLISIÓN
-			        for (int i = 0; i < indice; i++) {
-			            if (misIslas1[i] != null) {
-			                double distanciaX = Math.abs(randX - misIslas1[i].getX());
-			                double distanciaY = Math.abs(randY - misIslas1[i].getY());
-
-			                double anchoIslaExistente = misIslas1[i].getAncho(); 
-			                double distanciaMinimaX = (anchoIslaVariable / 2.0) + (anchoIslaExistente / 2.0) + margenX;
-
-			                if (distanciaX < distanciaMinimaX && distanciaY < (altoIslaEstandar + margenY)) {
-			                    superpuesto = true;
-			                    break; 
-			                }
-			            }
-			        }
-
-			        // Si el espacio está limpio, construimos la isla flotante
-			        if (!superpuesto && indice < misIslas1.length) {
-			            misIslas1[indice] = new Isla(randX, randY, anchoIslaVariable, 0);
-			            indice++;
-			        }
-			    }
+			double random = Math.random();
+			if (random<0.33){
+				islas[i] = new Isla(indice*280 , yIslas1, anchoIsla, 20);
+				// Si la isla está sobre la ultima isla de piso, la eliminamos
+				if (islas[i].bordeDerecho()>islas[islasPiso-1].bordeIzquierdo()){
+					islas[i] = null;
+				}
+				if(islas[i] != null && islas[i-1]!= null){
+					// Ponemos islas en la misma x que la isla anterior para ocupar más espacios
+				if (Math.random() < 0.45 && islas[i-1] != islas[islasPiso-1] && islas[i-1].getY() != yIslas1){
+					islas[i].setX(islas[i-1].getX());
+					indice -= 1;
+				}}
 			}
-
-			xActual += (anchoIslaVariable / 2.0) + 50; 
+			else if (random>0.66){
+				islas[i] = new Isla(indice*260 , yIslas2, anchoIsla, 20);
+				// Si la isla está sobre la ultima isla de piso, la eliminamos
+				if (islas[i].bordeDerecho()>islas[islasPiso-1].bordeIzquierdo()){
+					islas[i] = null;
+				}
+				if(islas[i] != null && islas[i-1]!= null){
+					// Ponemos islas en la misma x que la isla anterior para ocupar más espacios
+				if (Math.random() < 0.45 && islas[i-1] != islas[islasPiso-1] && islas[i-1].getY() != yIslas2){
+					islas[i].setX(islas[i-1].getX());
+					indice -= 1;
+				}}
+			}
+			else{
+				islas[i] = new Isla(indice*250  , yIslas3, anchoIsla, 20);
+				// Si la isla está sobre la ultima isla de piso, la eliminamos
+				if (islas[i].bordeDerecho()>islas[islasPiso-1].bordeIzquierdo()){
+					islas[i] = null;
+				}
+				if(islas[i] != null && islas[i-1]!= null){
+					// Ponemos islas en la misma x que la isla anterior para ocupar más espacios
+					if (Math.random() < 0.45 && islas[i-1] != islas[islasPiso-1] && islas[i-1].getY() != yIslas3){
+						islas[i].setX(islas[i-1].getX());
+						indice -= 1;
+					}
+				}
+			}
+			indice+=1;
 		}
-
-		return misIslas1;
-	}	
+		return islas;
+	}
 
 	
 	/**
@@ -283,7 +286,7 @@ public class Juego extends InterfaceJuego
 				}
 			}
 			
-			// Dibujamos el item que sueltan los enemigos
+			// Dibujamos los items que sueltan los enemigos
 			for (int i = 0; i < this.items.length; i++) {
 				if (this.items[i] != null){
 					this.items[i].dibujar(this.entorno);
@@ -293,14 +296,6 @@ public class Juego extends InterfaceJuego
 					}
 				}
 			}
-			/*if (item != null) {
-				item.dibujar(entorno);
-				// Si el item sale de pantalla
-				if (item.bordeDerecho() < 0){
-					item = null;
-				}
-			}*/
-
 			
 			
 			// Si hay un proyectil activo, se mueve y se dibuja
@@ -308,6 +303,27 @@ public class Juego extends InterfaceJuego
 				elizabeth.getProyectil().mover();
 				elizabeth.getProyectil().dibujar(entorno);
 			}
+			
+			
+			// Puntos texto
+			entorno.cambiarFont("Poppins Medium", 25, Color.BLACK);
+			entorno.escribirTexto("Puntos: " + puntuacion, 400, 35);
+			
+			// Vida extra
+			if (this.puntuacion >= this.proximaVidaExtra){
+				if (this.elizabeth.getVidasRestantes() < this.elizabeth.getVidasIniciales()){
+					elizabeth.ganarVida();
+					this.ticksMensaje = this.entorno.numeroDeTick() + this.duracionMensaje;
+				}
+				this.proximaVidaExtra += 100;
+			}
+			
+			// Mensaje vida extra
+			if (this.entorno.numeroDeTick() < this.ticksMensaje){
+				entorno.cambiarFont("Poppins Medium", 20, Color.BLACK);
+				entorno.escribirTexto("¡Vida Extra!", this.elizabeth.getX()-60, this.elizabeth.bordeSuperior() - 10);
+			}
+			
 			
 			// Si la princesa cae al vacío
 			if (elizabeth.bordeSuperior() > entorno.alto()) {
@@ -326,37 +342,6 @@ public class Juego extends InterfaceJuego
 				}
 			}
 			
-			// Puntos texto
-			entorno.cambiarFont("Poppins Medium", 25, Color.BLACK);
-			entorno.escribirTexto("Puntos: " + puntuacion, 400, 35);
-			
-			// Vida extra
-			/*if (this.puntuacion >= this.proximaVidaExtra && this.elizabeth.getVidasRestantes() < this.elizabeth.getVidasIniciales()) {
-				elizabeth.ganarVida();
-				this.ticksMensaje = this.entorno.numeroDeTick() + this.duracionMensaje;
-				this.proximaVidaExtra += 100;
-			}
-			else if (this.puntuacion >= this.proximaVidaExtra && this.elizabeth.getVidasRestantes() >= this.elizabeth.getVidasIniciales()){
-				//si la puntuacion es mayor a proximaVidaExtra pero tenemos todas las vidas, actualizamos proximaVidaExtra
-				this.proximaVidaExtra += 100;
-			}*/
-
-			if (this.puntuacion >= this.proximaVidaExtra){
-				if (this.elizabeth.getVidasRestantes() < this.elizabeth.getVidasIniciales()){
-					elizabeth.ganarVida();
-					this.ticksMensaje = this.entorno.numeroDeTick() + this.duracionMensaje;
-				}
-				this.proximaVidaExtra += 100;
-			}
-			
-			// Mensaje vida extra
-			if (this.entorno.numeroDeTick() < this.ticksMensaje){
-				entorno.cambiarFont("Poppins Medium", 20, Color.BLACK);
-				entorno.escribirTexto("¡Vida Extra!", this.elizabeth.getX()-60, this.elizabeth.bordeSuperior() - 10);
-			}
-			
-			
-			
 			//---   COLISIONES DE LA PRINCESA  ---
 			// Si Elizabeth roza el castillo, se activa la victoria
 			if (elizabeth != null && this.castillo.princesaWin(elizabeth)) {
@@ -374,13 +359,11 @@ public class Juego extends InterfaceJuego
 						elizabeth = null; // La princesa desaparece al perder todas las vidas
 						juegoPerdido = true;
 						return;
-					} else {
-					//elizabeth.reiniciarPosicion(respawnX, respawnY); // reiniciamos la psoción de la princesa al medio si no se queda sin vidas
 					}
 				}
 			}
+			
 			// Si la princesa colisiona con un item
-			//if (this.items.length > 0){
 			for (int i = 0; i < this.items.length; i++){
 				Item item = this.items[i];
 				if ( item != null && (elizabeth.colisionaPorAbajo(item) || elizabeth.colisionaPorArriba(item) || elizabeth.colisionaPorDerecha(item) || elizabeth.colisionaPorIzquierda(item))) {
@@ -395,7 +378,7 @@ public class Juego extends InterfaceJuego
 					}
 				}
 			}
-			//}
+
 
 
 
@@ -403,6 +386,7 @@ public class Juego extends InterfaceJuego
 
 			// Movimiento IZQUIERDA
 			if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA) && elizabeth.getX() - elizabeth.getAncho()/2 > 0) {
+				elizabeth.setDireccion(0);
 				if (elizabeth.puedeMover(- elizabeth.getVelocidadX(), 0, islas)) {
 					elizabeth.moverIzquierda();
 				}
@@ -410,13 +394,15 @@ public class Juego extends InterfaceJuego
 				
 			// Movimiento DERECHA
 			if (entorno.estaPresionada(entorno.TECLA_DERECHA) && elizabeth.bordeDerecho() < entorno.ancho()) { 
+				elizabeth.setDireccion(1);
 				// Si la princesa se puede mover y no está en el limite de movimiento
-				if (elizabeth.puedeMover(elizabeth.getVelocidadX(), 0, islas) && !elizabeth.estaEnlimiteMovimiento(elizabeth.getVelocidadX(), 0)){
+				if (elizabeth.puedeMover(elizabeth.getVelocidadX(), 0, islas) && !elizabeth.estaEnlimiteMovimiento(elizabeth.getVelocidadX())){
 					elizabeth.moverDerecha();
 				}
 				
 				// Si la princesa se puede mover y está en el limite de movimiento
-				else if (elizabeth.puedeMover(elizabeth.getVelocidadX(), 0, islas) && elizabeth.estaEnlimiteMovimiento(elizabeth.getVelocidadX(), 0)){
+				// Si está en el limite la princesa "se movería a la velocidad del mapa" (se deja de mover en x)
+				else if (elizabeth.puedeMover(elizabeth.getVelocidadX(), 0, islas) && elizabeth.estaEnlimiteMovimiento(elizabeth.getVelocidadX())){
 					// Si el castillo no está dentro de la pantalla
 					if ((castillo.bordeDerecho() > entorno.ancho())){
 						// Movemos el castillo y los elementos en pantalla en esta parte para hacerlo solo cuando se aprieta la tecla derecha
@@ -426,7 +412,8 @@ public class Juego extends InterfaceJuego
 									islas[i].mover(-this.velocidadMapa); //mueve cada isla en la dirección opuesta al movimiento de la princesa para simular desplazamiento del mapa
 							}
 						}
-
+						
+						// Movemos los items
 						for (int i = 0; i < this.items.length; i++){
 							if(this.items[i]!=null){
 								items[i].mover(-this.velocidadMapa);
@@ -436,7 +423,6 @@ public class Juego extends InterfaceJuego
 					}
 					// Si el castillo está dentro de la pantalla
 					else {
-						this.velocidadMapa = 0;
 						elizabeth.moverDerecha();
 					}
 				}
@@ -461,12 +447,8 @@ public class Juego extends InterfaceJuego
 			if (elizabeth.getProyectil() != null) {
 				for (int i = 0; i < enemigos.length; i++) {
 					if (elizabeth.getProyectil().colisionaConEnemigo(enemigos[i])) {
-						// Creamos un item aleatoriamente
-						/*if (Math.random() < 0.3 && cantItems < items.length) {
-							this.items[cantItems] = enemigos[i].soltarItem(entorno);
-							this.items[cantItems].dibujar(this.entorno);
-							cantItems++;
-						}*/
+
+						// Generamos el item si corresponde
 						if (Math.random() < 0.3){
 							boolean itemCreado = false;
 							for(int j = 0; j < this.items.length; j++){
@@ -477,6 +459,7 @@ public class Juego extends InterfaceJuego
 								}
 							}
 						}
+
 						puntuacion += 10;
 						enemigos[i] = null; // El enemigo desaparece
 						elizabeth.setProyectil(null); // El proyectil desaparece
@@ -521,7 +504,7 @@ public class Juego extends InterfaceJuego
             	x = entorno.ancho() + 60;
         	}
         	double y = buscarAlturaLibre();
-        	return new Enemigo(x, y, 45, 35, 2.0, direccion);
+        	return new Enemigo(x, y, 45, 35, this.velocidadMapa, direccion);
     	}
 
     	private double buscarAlturaLibre() {

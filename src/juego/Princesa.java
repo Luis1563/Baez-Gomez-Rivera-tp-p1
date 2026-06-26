@@ -19,25 +19,29 @@ public class Princesa {
 	private int vidasRestantes;
 	private int vidasIniciales;
 	private Image imagen;
+	private Image imagenInvertida;
 	private Image imagenVidas;
 	private Image imagenVidasGrises;
+	private int direccion;
     
     
-	public Princesa(double x, double y, double ancho, double alto, int vidasIniciales, Entorno entorno) {
+	public Princesa(double x, double y, double ancho, double alto, int vidasIniciales, Entorno entorno, int direccion) {
 		this.x = x;
 		this.y = y;
 		this.ancho = ancho;
 		this.alto = alto;
 		this.entorno = entorno;
 		this.vidasIniciales = vidasIniciales;
+		this.direccion = direccion;
 		
 		this.escala = 0.082; // Escala para dibujar la imagen
 		this.imagen = Herramientas.cargarImagen("princesa.png");
+		this.imagenInvertida = Herramientas.cargarImagen("princesaInvertida.png");
 		this.imagenVidas = Herramientas.cargarImagen("corazon.png");
 		this.imagenVidasGrises = Herramientas.cargarImagen("corazon_gris.png");
 		
 		this.velocidadY = 0;
-		this.velocidadX = 5;
+		this.velocidadX = 3;
 		this.gravedad = 0.5; //gravedad para simular la caída
 		this.velocidadMaximaDeCaida = 8; //velocidad máxima de caida
 		
@@ -52,8 +56,12 @@ public class Princesa {
 	
 	
 	public void dibujar(Entorno e) {
-		
-		e.dibujarImagen(imagen, x, y, 0, escala);
+		if (this.direccion == 1){
+			e.dibujarImagen(imagen, x, y, 0, escala);
+		}
+		else{
+			e.dibujarImagen(imagenInvertida, x, y, 0, escala);
+		}
 		//e.dibujarRectangulo(x, y, ancho, alto, 0, Color.RED);
 	}
 
@@ -331,7 +339,8 @@ public class Princesa {
         return true;
     }
 
-	public boolean estaEnlimiteMovimiento(double x, double y) {
+	//Si está en el limite la princesa "se movería a la velocidad del mapa"
+	public boolean estaEnlimiteMovimiento(double x) {
 		double limiteMovimiento = entorno.ancho() * 0.55; // La princesa puede moverse hasta el 55% del ancho de la pantalla
 
 		if (this.x + x > limiteMovimiento){
@@ -455,5 +464,17 @@ public class Princesa {
 	public boolean[] getVidas() {
 		return vidas;
 	}
+
+
+	public int getDireccion() {
+		return direccion;
+	}
+
+
+	public void setDireccion(int direccion) {
+		this.direccion = direccion;
+	}
+
+	
 
 }
