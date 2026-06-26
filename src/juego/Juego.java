@@ -504,7 +504,7 @@ public class Juego extends InterfaceJuego
             	x = entorno.ancho() + 60;
         	}
         	double y = buscarAlturaLibre();
-        	return new Enemigo(x, y, 45, 35, this.velocidadMapa, direccion);
+        	return new Enemigo(x, y, 45, 35, this.velocidadMapa,direccion);
     	}
 
     	private double buscarAlturaLibre() {
